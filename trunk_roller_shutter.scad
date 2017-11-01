@@ -9,7 +9,7 @@ module rawShell(x,y,z,r1,r2) {
             cube([r1,r1,z]);
             translate([0,y-r2,0])
             cube([r2,r2,z]);
-        };
+        }
         translate([r1,r1,0])
             cylinder(r=r1, h=z);
         translate([r2,y-r2,0])
@@ -35,7 +35,7 @@ module shell(x,y,z,w) {
                     }
                }
                 sphere(r=w);
-            };
+            }
             translate([0,0,w])
                 rawShell(x-2*w,y-2*w,z,r1,r2);
         }
