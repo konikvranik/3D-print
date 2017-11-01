@@ -14,7 +14,7 @@ function shell(x,y,z,w) {
 	var r2 = 10-w;
 	var h1 = 30;
 
-	rawShell(x-2*w,y-2*w,z,r1,r2).subtract([
+	return rawShell(x-2*w,y-2*w,z,r1,r2).subtract([
 		CSG.cube([15,32,z]).translate([0,y-32-w,52-w]),
 		CSG.cube([12,37-w-6,h1])
 			.union(CSG.cylinder({r:6,h:h1}).translate([6,37-w-6,0]))
