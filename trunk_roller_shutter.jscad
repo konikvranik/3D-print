@@ -49,7 +49,7 @@ function slot(x,y,z) {
 }
 
 function slotWalls(x,y,z,w){
-	return slot(x,y-w,z).subtract(cube([x,y,z]).translate([0,10,w])).subtract(slot(x-2*w,y-2*w,z).translate([w,0,0]))
+	return slot(x,y-w,z).subtract(cube([x,y,z]).translate([0,3*w,w])).subtract(slot(x-2*w,y-2*w,z).translate([w,0,0])).union(cube([x,w,w]).translate([0,0,z]))
 }
 
 function shell(x,y,z,w) {
