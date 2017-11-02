@@ -36,8 +36,8 @@ function rawShell(x,y,z,r1,r2) {
 	var r = 40;
 	return roundCorners( cube([x,y,z]), [r1,0,r2,r2])
 		.subtract(cube([100,100,z]).translate([0,-100,0]).rotate([p,0,0],[0,0,1],20)) // zkosit jednu stěnu
-		.subtract(cube([10,20,z]).translate([p-s,0,0]))
-		.union(cylinder({r:r,h:z}).subtract(cube([2*r,2*r,z]).translate([-r,10,0]).union(cube([r,2*r,z]).translate([-r,-r,0]))).translate([p-s,r,0]))
+		.subtract(cube([10,20,z]).translate([p-s,0,0])) // hole for bottom midle rounded corner 
+		.union(cylinder({r:r,h:z}).subtract(cube([2*r,2*r,z]).translate([-r,10,0]).union(cube([r,2*r,z]).translate([-r,-r,0]))).translate([p-s,r,0])) // bottom midle rounded corner - not too smooth
 		;
 }
 
@@ -67,6 +67,7 @@ function shell(x,y,z,w) {
 	return rawShell(x-2*w,y-2*w,z-2*w,r1,r2)
 		.subtract(cube([15,32,z]).translate([0,y-32-w,52-2*w])) // vyříznout výsek
 		.subtract(slot(12,37-w,30).translate([25,0,0])) // vyříznout škvíru
+		.subtract(cube([5*w,10,z]).translate([x-3*w,y-w-11-10,w])) // škvíra na roletu
 		.expand(w,CSG.defaultResolution3D)
 		.subtract(rawShell(x-2*w,y-2*w,z,r1,r2).translate([0,0,0])) // vydlábnout vnitřek
 		.union(slotWalls(12,37,30-w,w).translate([25,0,0]))
