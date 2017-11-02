@@ -52,21 +52,31 @@ function slotWalls(x,y,z,w){
 	return slot(x,y-w,z).subtract(cube([x,y,z]).translate([0,3*w,w])).subtract(slot(x-2*w,y-2*w,z).translate([w,0,0])).union(cube([x,w,w]).translate([0,0,z]))
 }
 
+function cornerCircle(d,w,z,s) {
+	return cylinder({d:d-2*w,h:z-2*w}).expand(w,CSG.defaultResolution3D)
+		.subtract(cylinder({d:d-2*w,h:z}))
+		.subtract(cube([d/2,s,z]).translate([0,-d/2+w,0]))
+		;
+}
+
 function shell(x,y,z,w) {
 	var r1 = 20-w;
 	var r2 = 10-w;
+	var cc = cornerCircle(8,w,z,2.5);
 
-	return rawShell(x-2*w,y-2*w,z,r1,r2)
+	return rawShell(x-2*w,y-2*w,z-2*w,r1,r2)
 		.subtract(cube([15,32,z]).translate([0,y-32-w,52-2*w])) // vyříznout výsek
 		.subtract(slot(12,37-w,30).translate([25,0,0])) // vyříznout škvíru
 		.expand(w,CSG.defaultResolution3D)
-		.subtract(rawShell(x-2*w,y-2*w,z+w,r1,r2).translate([0,0,0])) // vydlábnout vnitřek
+		.subtract(rawShell(x-2*w,y-2*w,z,r1,r2).translate([0,0,0])) // vydlábnout vnitřek
 		.union(slotWalls(12,37,30-w,w).translate([25,0,0]))
+		.union(cc.mirroredY().translate([15,y-4-w,0]))
+		.union(cc.mirroredY().mirroredX().translate([x-4-w,y-4-w,0]))
 		.translate([w,w,w]); // zalícovat s osama
 }
 
 function main(){
-	CSG.defaultResolution3D=16;
+	CSG.defaultResolution3D=8;
 	return shell(97,68,68,2.5);
 }
 
