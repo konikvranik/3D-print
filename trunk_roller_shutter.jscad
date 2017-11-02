@@ -61,7 +61,7 @@ function shell(x,y,z,w) {
 		.subtract(slot(12,37-w,30).translate([25,0,0])) // vyříznout škvíru
 		.expand(w,CSG.defaultResolution3D)
 		.subtract(rawShell(x-2*w,y-2*w,z+w,r1,r2).translate([0,0,0])) // vydlábnout vnitřek
-		.union(slotWalls(12,37,30,w).translate([25,0,0]))
+		.union(slotWalls(12,37,30-w,w).translate([25,0,0]))
 		.translate([w,w,w]); // zalícovat s osama
 }
 
