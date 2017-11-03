@@ -155,8 +155,8 @@ function part(x, y, z, w) {
       .union(slotWalls(12, 37, 30 - w, w).translate([ 25, 0, 0 ]))
 
       .union(cube([ 12, 20, z - w ]).translate([ 77 - w - 12, 0, 0 ]))
-      .subtract(cube([ 100, 100, z ]).translate([ 0, -100 - w, 0 ]).union(screwHole.rotateX(90).translate([p+23,5,60-w])).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20))  // zkosit jednu stěnu
-      .subtract(cube([ 20, 10, z ]).translate([ 77 - w - 12, 7, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20)) // zkosit jednu stěnu
+      .subtract(cube([ 100, 100, z ]).translate([ 0, -100 - w, 0 ]).union(screwHole.rotateX(90).translate([ p + 23, 5, 60 - w ])).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20)) // zkosit jednu stěnu
+      .subtract(cube([ 20, 10, z ]).translate([ 77 - w - 12, 7, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20))                                                              // zkosit jednu stěnu
       .union(cube([ 1, 4, 43 - w ]).translate([ 77 - w - 1, 15, 0 ]))
 
       .union(cube([ 9, 10 - w, 20 - w ]).union(cube([ 1.5, 4, 18 - w ]).translate([ 9 - 1.5, -4, 0 ])).subtract(cube([ 9 - 3, 10 - w - 1.5, 20 - w ]).translate(1.5, 1.5, 0)).translate([ 30 - w - 1.5, y - 10 - w, 0 ]))
@@ -186,13 +186,19 @@ function part(x, y, z, w) {
 
       .subtract(buttonHole(w).translate([ 38.5 - w, y - w, 5.5 - w ]))
 
-      .subtract(screwHole.rotateY(-90).translate([1.5-w,31-w,60-w]))
+      .subtract(screwHole.rotateY(-90).translate([ 1.5 - w, 31 - w, 60 - w ]))
 
       .translate([ w, w, w ]); // zalícovat s osama
 }
 
-function main() {
-  CSG.defaultResolution3D = 50;
+function getParameterDefinitions() {
+  return [ {name : 'resolution', type : 'int', initial : 8, caption : "Smoothiness of model:"},
+           {name : 'expand', type : 'checkbox', checked : false, caption : "Smooth corners:"} ];
+}
+
+function main(params) {
+  CSG.defaultResolution3D = params.resolution;
+  EXPAND = params.expand;
   //  return partHull(97, 68, 68, 20, 10);
   return part(97, 68, 68, 2.5);
 }
