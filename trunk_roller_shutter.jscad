@@ -1,5 +1,19 @@
 // source: trunk_roller_shutter.jscad
 
+var EXPAND = false;
+
+function expandIf(v, w) {
+  var sc = [];
+  var mv = [];
+  var ax = [ 'x', 'y', 'z' ];
+  for (var i = 0; i < ax.length; i++) {
+    var s = v.getBounds()[1][ax[i]] - v.getBounds()[0][ax[i]];
+    mv.push(((v.getBounds()[1][ax[i]] + v.getBounds()[0][ax[i]]) / s) * -w);
+    sc.push((s + 2 * w) / s);
+  }
+  return EXPAND ? v.expand(w, CSG.defaultResolution3D) : v.scale(sc).translate(mv);
+}
+
 function roundCorners(obj, rs) {
   var cls = [];
   for (i = 0; i < rs.length; i++) {
@@ -62,10 +76,8 @@ function slotWalls(x, y, z, w) {
 }
 
 function cornerCircle(d, w, z, s) {
-  return cylinder({d : d - 2 * w, h : z - 2 * w})
-      .expand(w, CSG.defaultResolution3D)
-      .subtract(cylinder({d : d - 2 * w, h : z}))
-      .subtract(cube([ d / 2, s, z ]).translate([ 0, -d / 2 + w, 0 ]));
+  var v = cylinder({d : d - 2 * w, h : z - 2 * w});
+  return expandIf(v, w).subtract(cylinder({d : d - 2 * w, h : z})).subtract(cube([ d / 2, s, z ]).translate([ 0, -d / 2 + w, 0 ]));
 }
 
 function rolletHole(b, t, z, w) {
@@ -94,11 +106,12 @@ function rolletHole(b, t, z, w) {
 function expandedHull(x, y, z, w, r1, r2, rolletHoleFromTop, rolletHoleTop) {
 
   var rolletHoleBottom = 10;
-  return partHull(x, y, z - 2 * w, r1, r2)
-      .subtract(cube([ 15, 32, z ]).translate([ 0, y - 32 + w, 52 - 2 * w ]))                                                             // vyříznout výsek
-      .subtract(slot(12, 37 - w, 30).translate([ 25, 0, 0 ]))                                                                             // vyříznout škvíru
-      .subtract(rolletHole(rolletHoleBottom + 2 * w, rolletHoleTop + 2 * w, z, w).translate([ x, y + 2 * w - rolletHoleFromTop, 2 * w ])) // škvíra na roletu
-      .expand(w, CSG.defaultResolution3D);
+  var v = partHull(x, y, z - 2 * w, r1, r2)
+              .subtract(cube([ 15, 32, z ]).translate([ 0, y - 32 + w, 52 - 2 * w ]))                                                             // vyříznout výsek
+              .subtract(slot(12 - (EXPAND ? 0 : 2 * w), 37 - (EXPAND ? w : 2 * w), 30).translate([ 25 + (EXPAND ? 0 : w), 0, 0 ]))                // vyříznout škvíru
+              .subtract(rolletHole(rolletHoleBottom + 2 * w, rolletHoleTop + 2 * w, z, w).translate([ x, y + 2 * w - rolletHoleFromTop, 2 * w ])) // škvíra na roletu
+      ;
+  return expandIf(v, w);
 }
 
 function shell(x, y, z, w) {
@@ -130,7 +143,7 @@ function part(x, y, z, w) {
 }
 
 function main() {
-  CSG.defaultResolution3D = 8;
+  CSG.defaultResolution3D = 3;
   //  return partHull(97, 68, 68, 20, 10);
   return part(97, 68, 68, 2.5);
 }
