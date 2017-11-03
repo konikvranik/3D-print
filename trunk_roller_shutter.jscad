@@ -33,8 +33,14 @@ function roundCorners(obj, rs) {
 function partHull(x, y, z, r1, r2) {
   var p = 50 - 2.5;
   var s = 7;  // posun středu kružnice
-  var r = 40; // poloměr prostřední spodní kružnice
+  var r = 44; // poloměr prostřední spodní kružnice
+  var r3 = 30;
   return roundCorners(cube([ x, y, z ]), [ r1, 0, r2, r2 ])
+      .subtract(cube([ 50, 35, z ]).translate([ x - 15, 0, 0 ]))
+      .union(cylinder({r : r3, h : z}).translate([ x - r3 + 2, r3 + 8, 0 ]))
+      .subtract(cube([ 100, y, z ]).translate([ x, 0, 0 ]))
+      .subtract(cube([ x, 100, z ]).translate([ 0, y, 0 ]))
+
       .subtract(cube([ 100, 100, z ]).translate([ 0, -100, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20))                                                                                // zkosit jednu stěnu
       .subtract(cube([ 10, 20, z ]).translate([ p - s, 0, 0 ]))                                                                                                                      // hole for bottom midle rounded corner
       .union(cylinder({r : r, h : z}).subtract(cube([ 2 * r, 2 * r, z ]).translate([ -r, 10, 0 ]).union(cube([ r, 2 * r, z ]).translate([ -r, -r, 0 ]))).translate([ p - s, r, 0 ])) // bottom midle rounded corner - not too smooth
@@ -50,7 +56,7 @@ function slot(x, y, z) {
 
 function slotWalls(x, y, z, w) {
   return slot(x, y - w, z)
-      .subtract(cube([ x, y, z ]).translate([ 0, 3 * w, w ]))
+      .subtract(cube([ x, y, z ]).translate([ 0, 3 * w, 9 - w ]))
       .subtract(slot(x - 2 * w, y - 2 * w, z).translate([ w, 0, 0 ]))
       .union(cube([ x, w, w ]).translate([ 0, 0, z ]))
 }
@@ -63,39 +69,68 @@ function cornerCircle(d, w, z, s) {
 }
 
 function rolletHole(b, t, z, w) {
-  return cube([ w, b, z ]).translate([ -w, -b, 0 ]);
+  return polyhedron({
+    points : [
+      [ 0, 0, 0 ],
+      [ -w, 0, 0 ],
+      [ 0, -b, 0 ],
+      [ -w, -b, 0 ],
+      [ 0, -t, z ],
+      [ -w, -t, z ],
+      [ 0, 0, z ],
+      [ -w, 0, z ]
+    ],
+    polygons : [
+      [ 0, 1, 3, 2 ],
+      [ 0, 6, 7, 1 ],
+      [ 0, 2, 4, 6 ],
+      [ 7, 5, 3, 1 ],
+      [ 7, 6, 4, 5 ],
+      [ 2, 3, 5, 4 ]
+    ]
+  });
+}
+
+function expandedHull(x, y, z, w, r1, r2, rolletHoleFromTop, rolletHoleTop) {
+
+  var rolletHoleBottom = 10;
+  return partHull(x, y, z - 2 * w, r1, r2)
+      .subtract(cube([ 15, 32, z ]).translate([ 0, y - 32 + w, 52 - 2 * w ]))                                                             // vyříznout výsek
+      .subtract(slot(12, 37 - w, 30).translate([ 25, 0, 0 ]))                                                                             // vyříznout škvíru
+      .subtract(rolletHole(rolletHoleBottom + 2 * w, rolletHoleTop + 2 * w, z, w).translate([ x, y + 2 * w - rolletHoleFromTop, 2 * w ])) // škvíra na roletu
+      .expand(w, CSG.defaultResolution3D);
 }
 
 function shell(x, y, z, w) {
 
+  var rolletHoleFromTop = 11;
+  var rolletHoleTop = 20;
+
   var r1 = 20 - w;
   var r2 = 10 - w;
 
-  var rolletHoleFromTop = 11;
-  var rolletHoleBottom = 10;
-  var rolletHoleTop = 20;
+  var dc = 8;
+  var rc = dc / 2;
 
-  return partHull(x, y, z - 2 * w, r1, r2)
-      .subtract(cube([ 15, 32, z ]).translate([ 0, y - 32 + w, 52 - 2 * w ]))                                         // vyříznout výsek
-      .subtract(slot(12, 37 - w, 30).translate([ 25, 0, 0 ]))                                                         // vyříznout škvíru
-      .subtract(rolletHole(rolletHoleBottom, rolletHoleTop, z, w).translate([ x, y + w - rolletHoleFromTop, 2 * w ])) // škvíra na roletu
-      .expand(w, CSG.defaultResolution3D)
+  var cc = cornerCircle(dc, w, z, 2.5).mirroredY();
+
+  return expandedHull(x, y, z, w, r1, r2, rolletHoleFromTop, rolletHoleTop)
       .subtract(partHull(x, y, z, r1, r2).translate([ 0, 0, 0 ])) // vydlábnout vnitřek
-      ;
+      .union(cc.translate([ 15, y - rc + w, 0 ]))
+      .union(cc.mirroredX().rotateZ(-45).translate([ x - rc + w, y - rc + w - (rolletHoleFromTop - dc), 0 ]))
+      .union(cc.rotateZ(-90).translate([ x - rc + w, y - rc + w - (rolletHoleFromTop + rolletHoleTop), 0 ]));
 }
 
 function part(x, y, z, w) {
-
   var cc = cornerCircle(8, w, z, 2.5).mirroredY();
 
   return shell(x - 2 * w, y - 2 * w, z, w)
       .union(slotWalls(12, 37, 30 - w, w).translate([ 25, 0, 0 ]))
-      .union(cc.translate([ 15, y - 4 - w, 0 ]))
-      .union(cc.mirroredX().rotateZ(-60).translate([ x - 4 - w, y - 4 - w - 8, 0 ]))
       .translate([ w, w, w ]); // zalícovat s osama
 }
 
 function main() {
   CSG.defaultResolution3D = 8;
+  //  return partHull(97, 68, 68, 20, 10);
   return part(97, 68, 68, 2.5);
 }
