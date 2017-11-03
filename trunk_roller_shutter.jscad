@@ -59,7 +59,7 @@ function cornerCircle(d, w, z, s) {
 function shell(x, y, z, w) {
   var r1 = 20 - w;
   var r2 = 10 - w;
-  var cc = cornerCircle(8, w, z, 2.5);
+  var cc = cornerCircle(8, w, z, 2.5).mirroredY();
 
   return rawShell(x - 2 * w, y - 2 * w, z - 2 * w, r1, r2)
       .subtract(cube([ 15, 32, z ]).translate([ 0, y - 32 - w, 52 - 2 * w ]))        // vyříznout výsek
@@ -68,8 +68,8 @@ function shell(x, y, z, w) {
       .expand(w, CSG.defaultResolution3D)
       .subtract(rawShell(x - 2 * w, y - 2 * w, z, r1, r2).translate([ 0, 0, 0 ])) // vydlábnout vnitřek
       .union(slotWalls(12, 37, 30 - w, w).translate([ 25, 0, 0 ]))
-      .union(cc.mirroredY().translate([ 15, y - 4 - w, 0 ]))
-      .union(cc.mirroredY().mirroredX().translate([ x - 4 - w, y - 4 - w, 0 ]))
+      .union(cc.translate([ 15, y - 4 - w, 0 ]))
+      .union(cc.mirroredX().translate([ x - 4 - w, y - 4 - w, 0 ]))
       .translate([ w, w, w ]); // zalícovat s osama
 }
 
