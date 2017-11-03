@@ -49,11 +49,17 @@ function slot(x, y, z) {
 }
 
 function slotWalls(x, y, z, w) {
-  return slot(x, y - w, z).subtract(cube([ x, y, z ]).translate([ 0, 3 * w, w ])).subtract(slot(x - 2 * w, y - 2 * w, z).translate([ w, 0, 0 ])).union(cube([ x, w, w ]).translate([ 0, 0, z ]))
+  return slot(x, y - w, z)
+      .subtract(cube([ x, y, z ]).translate([ 0, 3 * w, w ]))
+      .subtract(slot(x - 2 * w, y - 2 * w, z).translate([ w, 0, 0 ]))
+      .union(cube([ x, w, w ]).translate([ 0, 0, z ]))
 }
 
 function cornerCircle(d, w, z, s) {
-  return cylinder({d : d - 2 * w, h : z - 2 * w}).expand(w, CSG.defaultResolution3D).subtract(cylinder({d : d - 2 * w, h : z})).subtract(cube([ d / 2, s, z ]).translate([ 0, -d / 2 + w, 0 ]));
+  return cylinder({d : d - 2 * w, h : z - 2 * w})
+      .expand(w, CSG.defaultResolution3D)
+      .subtract(cylinder({d : d - 2 * w, h : z}))
+      .subtract(cube([ d / 2, s, z ]).translate([ 0, -d / 2 + w, 0 ]));
 }
 
 function rolletHole(b, t, z, w) {
@@ -79,12 +85,13 @@ function shell(x, y, z, w) {
 }
 
 function part(x, y, z, w) {
+
   var cc = cornerCircle(8, w, z, 2.5).mirroredY();
 
   return shell(x - 2 * w, y - 2 * w, z, w)
       .union(slotWalls(12, 37, 30 - w, w).translate([ 25, 0, 0 ]))
       .union(cc.translate([ 15, y - 4 - w, 0 ]))
-      .union(cc.mirroredX().translate([ x - 4 - w, y - 4 - w, 0 ]))
+      .union(cc.mirroredX().rotateZ(-60).translate([ x - 4 - w, y - 4 - w - 6, 0 ]))
       .translate([ w, w, w ]); // zalícovat s osama
 }
 
