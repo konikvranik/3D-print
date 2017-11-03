@@ -1,6 +1,6 @@
 // source: trunk_roller_shutter.jscad
 
-var EXPAND = false;
+var EXPAND = true;
 
 function expandIf(v, w) {
   var sc = [];
@@ -188,13 +188,11 @@ function part(x, y, z, w) {
 
       .subtract(screwHole.rotateY(-90).translate([1.5-w,31-w,60-w]))
 
-      .subtract(screwHole)
-
       .translate([ w, w, w ]); // zalícovat s osama
 }
 
 function main() {
-  CSG.defaultResolution3D = 3;
+  CSG.defaultResolution3D = 50;
   //  return partHull(97, 68, 68, 20, 10);
   return part(97, 68, 68, 2.5);
 }
