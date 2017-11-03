@@ -32,11 +32,11 @@ function roundCorners(obj, rs) {
 
 function rawShell(x,y,z,r1,r2) {
 	var p = 50-2.5;
-	var s = 7;
-	var r = 40;
+	var s = 7; // posun středu kružnice
+	var r = 40; // poloměr prostřední spodní kružnice
 	return roundCorners( cube([x,y,z]), [r1,0,r2,r2])
 		.subtract(cube([100,100,z]).translate([0,-100,0]).rotate([p,0,0],[0,0,1],20)) // zkosit jednu stěnu
-		.subtract(cube([10,20,z]).translate([p-s,0,0])) // hole for bottom midle rounded corner 
+		.subtract(cube([10,20,z]).translate([p-s,0,0])) // hole for bottom midle rounded corner
 		.union(cylinder({r:r,h:z}).subtract(cube([2*r,2*r,z]).translate([-r,10,0]).union(cube([r,2*r,z]).translate([-r,-r,0]))).translate([p-s,r,0])) // bottom midle rounded corner - not too smooth
 		;
 }
@@ -80,4 +80,3 @@ function main(){
 	CSG.defaultResolution3D=8;
 	return shell(97,68,68,2.5);
 }
-
