@@ -91,7 +91,7 @@ function part(x, y, z, w) {
   return shell(x - 2 * w, y - 2 * w, z, w)
       .union(slotWalls(12, 37, 30 - w, w).translate([ 25, 0, 0 ]))
       .union(cc.translate([ 15, y - 4 - w, 0 ]))
-      .union(cc.mirroredX().rotateZ(-60).translate([ x - 4 - w, y - 4 - w - 6, 0 ]))
+      .union(cc.mirroredX().rotateZ(-60).translate([ x - 4 - w + 1, y - 4 - w - 8, 0 ]))
       .translate([ w, w, w ]); // zalícovat s osama
 }
 
