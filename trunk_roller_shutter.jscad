@@ -136,9 +136,22 @@ function shell(x, y, z, w) {
 
 function part(x, y, z, w) {
   var cc = cornerCircle(8, w, z, 2.5).mirroredY();
+  var p = 50 - 2.5;
 
   return shell(x - 2 * w, y - 2 * w, z, w)
       .union(slotWalls(12, 37, 30 - w, w).translate([ 25, 0, 0 ]))
+
+      .union(cube([ 12, 20, z - w ]).translate([ 77 - w - 12, 0, 0 ]))
+      .subtract(cube([ 100, 100, z ]).translate([ 0, -100 - w, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20))  // zkosit jednu stěnu
+      .subtract(cube([ 20, 10, z ]).translate([ 77 - w - 12, 7, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20)) // zkosit jednu stěnu
+
+      .union(cube([ 9, 10 - w, 20 - w ]).union(cube([ 1.5, 4, 18 - w ]).translate([ 9 - 1.5, -4, 0 ])).subtract(cube([ 9 - 3, 10 - w - 1.5, 20 - w ]).translate(1.5, 1.5, 0)).translate([ 30 - w - 1.5, y - 10 - w, 0 ]))
+
+      .union(cube([ 1, 4, 43 - w ]).translate([ 76 - w, y - w - 4, 0 ]))
+
+      .union(cube([ 1, 11 - w, 54 - w ]).subtract(cube([ 1, 11 - w, 54 - w ]).translate([ 0, 11 - w - 2, 54 - w - 12 ])).translate([ 16 - w, 0, 0 ]))
+
+      .union(cylinder({d : 19, h : 7 - w}).union(cylinder({d : 8, h : 20 - w}).subtract(cylinder({d : 5, h : 20 - w}).translate([ 0, 0, 7 - w ]))).translate([ 74 - w, y - 27 - w, 0 ]))
       .translate([ w, w, w ]); // zalícovat s osama
 }
 
