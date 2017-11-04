@@ -36,8 +36,7 @@ function roundCorners(obj, rs) {
         rx = -r;
       default:
       }
-      obj = obj
-                .subtract(cube({size : [ rx, ry, z ]}).translate([ x, y, 0 ]))
+      obj = obj.subtract(cube({size : [ rx, ry, z ]}).translate([ x, y, 0 ]))
                 .union(cylinder({r : r, h : z}).translate([ x + rx, y + ry, 0 ]));
     }
   }
@@ -55,9 +54,14 @@ function partHull(x, y, z, r1, r2) {
       .subtract(cube([ 100, y, z ]).translate([ x, 0, 0 ]))
       .subtract(cube([ x, 100, z ]).translate([ 0, y, 0 ]))
 
-      .subtract(cube([ 100, 100, z ]).translate([ 0, -100, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20))                                                                                // zkosit jednu stěnu
-      .subtract(cube([ 10, 20, z ]).translate([ p - s, 0, 0 ]))                                                                                                                      // hole for bottom midle rounded corner
-      .union(cylinder({r : r, h : z}).subtract(cube([ 2 * r, 2 * r, z ]).translate([ -r, 10, 0 ]).union(cube([ r, 2 * r, z ]).translate([ -r, -r, 0 ]))).translate([ p - s, r, 0 ])) // bottom midle rounded corner - not too smooth
+      .subtract(
+          cube([ 100, 100, z ]).translate([ 0, -100, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20)) // zkosit jednu stěnu
+      .subtract(cube([ 10, 20, z ]).translate([ p - s, 0, 0 ])) // hole for bottom midle rounded corner
+      .union(cylinder({r : r, h : z})
+                 .subtract(cube([ 2 * r, 2 * r, z ])
+                               .translate([ -r, 10, 0 ])
+                               .union(cube([ r, 2 * r, z ]).translate([ -r, -r, 0 ])))
+                 .translate([ p - s, r, 0 ])) // bottom midle rounded corner - not too smooth
       ;
 }
 
@@ -77,7 +81,9 @@ function slotWalls(x, y, z, w) {
 
 function cornerCircle(d, w, z, s) {
   var v = cylinder({d : d - 2 * w, h : z - 2 * w});
-  return expandIf(v, w).subtract(cylinder({d : d - 2 * w, h : z})).subtract(cube([ d / 2, s, z ]).translate([ 0, -d / 2 + w, 0 ]));
+  return expandIf(v, w)
+      .subtract(cylinder({d : d - 2 * w, h : z}))
+      .subtract(cube([ d / 2, s, z ]).translate([ 0, -d / 2 + w, 0 ]));
 }
 
 function rolletHole(b, t, z, w) {
@@ -92,14 +98,7 @@ function rolletHole(b, t, z, w) {
       [ 0, 0, z ],
       [ -w, 0, z ]
     ],
-    polygons : [
-      [ 0, 1, 3, 2 ],
-      [ 0, 6, 7, 1 ],
-      [ 0, 2, 4, 6 ],
-      [ 7, 5, 3, 1 ],
-      [ 7, 6, 4, 5 ],
-      [ 2, 3, 5, 4 ]
-    ]
+    polygons : [ [ 0, 1, 3, 2 ], [ 0, 6, 7, 1 ], [ 0, 2, 4, 6 ], [ 7, 5, 3, 1 ], [ 7, 6, 4, 5 ], [ 2, 3, 5, 4 ] ]
   });
 }
 
@@ -107,9 +106,11 @@ function expandedHull(x, y, z, w, r1, r2, rolletHoleFromTop, rolletHoleTop) {
 
   var rolletHoleBottom = 10;
   var v = partHull(x, y, z - 2 * w, r1, r2)
-              .subtract(cube([ 15, 32, z ]).translate([ 0, y - 32 + w, 52 - 2 * w ]))                                                             // vyříznout výsek
-              .subtract(slot(12 - (EXPAND ? 0 : 2 * w), 37 - (EXPAND ? w : 2 * w), 30).translate([ 25 + (EXPAND ? 0 : w), 0, 0 ]))                // vyříznout škvíru
-              .subtract(rolletHole(rolletHoleBottom + 2 * w, rolletHoleTop + 2 * w, z, w).translate([ x, y + 2 * w - rolletHoleFromTop, 2 * w ])) // škvíra na roletu
+              .subtract(cube([ 15, 32, z ]).translate([ 0, y - 32 + w, 50 - 2 * w ])) // vyříznout výsek
+              .subtract(slot(12 - (EXPAND ? 0 : 2 * w), 37 - (EXPAND ? w : 2 * w), 30)
+                            .translate([ 25 + (EXPAND ? 0 : w), 0, 0 ])) // vyříznout škvíru
+              .subtract(rolletHole(rolletHoleBottom + 2 * w, rolletHoleTop + 2 * w, z, w)
+                            .translate([ x, y + 2 * w - rolletHoleFromTop, 2 * w ])) // škvíra na roletu
       ;
   return expandIf(v, w);
 }
@@ -122,7 +123,7 @@ function shell(x, y, z, w) {
   var r1 = 20 - w;
   var r2 = 10 - w;
 
-  var dc = 8;
+  var dc = 8.5;
   var rc = dc / 2;
 
   var cc = cornerCircle(dc, w, z, 2.5).mirroredY();
@@ -141,12 +142,18 @@ function buttonHole(w) {
   var cc = cyl.intersect(cyl.translate([ 0, 2 * r - 17 ]))
                .translate([ 21 / 2, -r + 17, 0 ])
                .intersect(cube([ 17, 17, w ]).translate([ 2, 0, 0 ]));
-  return cc.union(sq)
-      .rotateX(90);
+  return cc.union(sq).rotateX(90);
+}
+
+function rhomboid(x, y, z, a) {
+  var m0 = x * tan(a);
+  var my = y + m0;
+  var path = polygon([ [ 0, 0 ], [ x, m0 ], [ x, my ], [ 0, y ] ]);
+  return linear_extrude({height : z}, path);
 }
 
 function part(x, y, z, w) {
-  var cc = cornerCircle(8, w, z, 2.5).mirroredY();
+  var cc = cornerCircle(8.5, w, z, 2.5).mirroredY();
   var p = 50 - 2.5;
   var prolis = cube([ 9, 1.25, 24 ]);
   var screwHole = cylinder({d : 10, h : 20});
@@ -154,33 +161,46 @@ function part(x, y, z, w) {
   return shell(x - 2 * w, y - 2 * w, z, w)
       .union(slotWalls(12, 37, 30 - w, w).translate([ 25, 0, 0 ]))
 
-      .union(cube([ 12, 20, z - w ]).translate([ 77 - w - 12, 0, 0 ]).subtract(cube([ 20, 10, z ]).translate([ 77 - w - 12, 7, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20)) // zkosit jednu stěnu
-             )
-      .subtract(cube([ 100, 100, z ]).translate([ 0, -100 - w, 0 ]).union(screwHole.rotateX(90).translate([ p + 23, 5, 60 - w ])).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20)) // zkosit jednu stěnu
+      .union(rhomboid(12, 8, z - w, 20)
+                 .subtract(rhomboid(8, 6, z - w, 20).translate([ 2, 0, 0 ]))
+                 .translate([ 77 - w - 12, 4.3, 0 ]))
+      .subtract(screwHole.rotateX(90).translate([ p + 23.2, 4, 60 - w ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20))
+
+      .union(
+          cube([ 7, 12, 43 - w ]).subtract(cube([ 7, 11, z ]).translate([ 1, 0, 0 ])).translate([ 88 - w, 18 - w, 0 ]))
+
       .union(cube([ 1, 4, 43 - w ]).translate([ 77 - w - 1, 15, 0 ]))
 
-      .union(cube([ 9, 10 - w, 20 - w ]).union(cube([ 1.5, 4, 18 - w ]).translate([ 9 - 1.5, -4, 0 ])).subtract(cube([ 9 - 3, 10 - w - 1.5, 20 - w ]).translate(1.5, 1.5, 0)).translate([ 30 - w - 1.5, y - 10 - w, 0 ]))
+      .union(cube([ 9, 10 - w, 20 - w ])
+                 .union(cube([ 1.5, 4, 18 - w ]).translate([ 9 - 1.5, -4, 0 ]))
+                 .subtract(cube([ 9 - 3, 10 - w - 1.5, 20 - w ]).translate([ 1.5, 1.5, 0 ]))
+                 .translate([ 30 - w - 1.5, y - 10 - w, 0 ]))
 
       .union(cube([ 1, 4, 43 - w ]).translate([ 76 - w, y - w - 4, 0 ]))
 
-      .union(cube([ 1, 11 - w, 54 - w ]).subtract(cube([ 1, 11 - w, 54 - w ]).translate([ 0, 11 - w - 2, 54 - w - 12 ])).translate([ 16 - w, 0, 0 ]))
+      .union(cube([ 1, 11 - w, 54 - w ])
+                 .subtract(cube([ 1, 11 - w, 54 - w ]).translate([ 0, 11 - w - 2, 54 - w - 12 ]))
+                 .translate([ 16 - w, 0, 0 ]))
 
-      .union(cylinder({d : 19, h : 7 - w}).union(cylinder({d : 8, h : 20 - w}).subtract(cylinder({d : 5, h : 20 - w}).translate([ 0, 0, 7 - w ]))).translate([ 74 - w, y - 27 - w, 0 ]))
+      .union(
+          cylinder({d : 19, h : 7 - w})
+              .union(cylinder({d : 8, h : 20 - w}).subtract(cylinder({d : 5, h : 20 - w}).translate([ 0, 0, 7 - w ])))
+              .translate([ 74 - w, y - 27 - w, 0 ]))
 
       .union(cube([ 20, 23 - w, 17.5 - w ])
-        .union(cube([ 11, 31 - w, 8 - w ]).translate([ 3 - 1.5, -8, 0 ]))
-        .subtract(
-          cube([ 11 - 3, 31 - w - 1.5, z ]).translate([ 3, 1.5 - 8, 0 ])
-          .union(cube([ 20 - 1.5, 23 - w, 17.5 - w ]).translate([ 0, 1.5, 5 - w ]))
-          .union(cube([ 7 - 3, 23 - w - 1.5, z ]).translate([ 14.5, 1.5, 0 ]))
-          .union(cube([ 20, 23 - w, 17.5 - w ]).translate([ 0, -14 + w, 10 - w ]))
-          .union(cube([ 6, 23 - w, z ]).translate([ 0, 0, 8 - w ]))
-          .union(cube([ 10.5, 21.5 - w, z ]).translate([ 2, 1.5, 0 ]))
-        ).translate([ 62 - 20 - w, y - 23 - w, 0 ])
-      )
+                 .union(cube([ 11, 31 - w, 8 - w ]).translate([ 3 - 1.5, -8, 0 ]))
+                 .subtract(cube([ 11 - 3, 31 - w - 1.5, z ])
+                               .translate([ 3, 1.5 - 8, 0 ])
+                               .union(cube([ 20 - 1.5, 23 - w, 17.5 - w ]).translate([ 0, 1.5, 5 - w ]))
+                               .union(cube([ 7 - 3, 23 - w - 1.5, z ]).translate([ 14.5, 1.5, 0 ]))
+                               .union(cube([ 20, 23 - w, 17.5 - w ]).translate([ 0, -14 + w, 10 - w ]))
+                               .union(cube([ 6, 23 - w, z ]).translate([ 0, 0, 8 - w ]))
+                               .union(cube([ 10.5, 21.5 - w, z ]).translate([ 2, 1.5, 0 ])))
+                 .translate([ 62 - 20 - w, y - 23 - w, 0 ]))
 
       .union(cube([ 6, 1.5, 10.5 - w ])
-        .union(cube([ 2, 3, 17.5 - w ]).translate([ 4, -1.5, 0 ])).translate([ 61 - 6 - w, y - 32 - w, 0 ]))
+                 .union(cube([ 2, 3, 17.5 - w ]).translate([ 4, -1.5, 0 ]))
+                 .translate([ 61 - 6 - w, y - 32 - w, 0 ]))
 
       .subtract(prolis.union(prolis.translate([ 21, 0, 0 ])).translate([ 23 - w, y - 2 * w, z - 24 - w ]))
 
@@ -188,13 +208,14 @@ function part(x, y, z, w) {
 
       .subtract(screwHole.rotateY(-90).translate([ 1.5 - w, 31 - w, 60 - w ]))
 
-
       .translate([ w, w, w ]); // zalícovat s osama
 }
 
 function getParameterDefinitions() {
-  return [ {name : 'resolution', type : 'int', initial : 8, caption : "Smoothiness of model:"},
-           {name : 'expand', type : 'checkbox', checked : false, caption : "Smooth corners:"} ];
+  return [
+    {name : 'resolution', type : 'int', initial : 8, caption : "Smoothiness of model:"},
+    {name : 'expand', type : 'checkbox', checked : false, caption : "Smooth corners:"}
+  ];
 }
 
 function main(params) {
@@ -202,7 +223,7 @@ function main(params) {
   EXPAND = params.expand;
   //  return partHull(97, 68, 68, 20, 10);
   return part(97, 68, 68, 2.5)
-  //.intersect(cube([200,200,1]).translate([-100,-100,3]))
-  //.intersect(cube([50,200,200]).translate([85,-100,-100])).rotateY(90)
-;
+      //.intersect(cube([200,200,1]).translate([-100,-100,3]))
+      //.intersect(cube([50,200,200]).translate([85,-100,-100])).rotateY(90)
+      ;
 }
