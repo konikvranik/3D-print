@@ -188,7 +188,6 @@ function part(x, y, z, w) {
 
       .subtract(screwHole.rotateY(-90).translate([ 1.5 - w, 31 - w, 60 - w ]))
 
-      .subtract(cube([200,200,10]).translate([-100,-100,-9]))
 
       .translate([ w, w, w ]); // zalícovat s osama
 }
@@ -202,5 +201,8 @@ function main(params) {
   CSG.defaultResolution3D = params.resolution;
   EXPAND = params.expand;
   //  return partHull(97, 68, 68, 20, 10);
-  return part(97, 68, 68, 2.5);
+  return part(97, 68, 68, 2.5)
+  //.intersect(cube([200,200,1]).translate([-100,-100,3]))
+  //.intersect(cube([50,200,200]).translate([85,-100,-100])).rotateY(90)
+;
 }
