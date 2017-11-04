@@ -23,17 +23,17 @@ $INSBASE
   9
 $EXTMIN
  10
-2.088009158712458
+2.088009158712456
  20
-1.969302314358993
+1.969302314358994
  30
 0
   9
 $EXTMAX
  10
-559.3830709120324
+564.6001995386669
  20
-281.1540910837142
+279.4557065774778
  30
 0
   9
@@ -775,9 +775,9 @@ $MAXACTVP
   9
 $PINSBASE
  10
-9.43105687084649
+-276.7008519300974
  20
-9.777608751134039
+-79.87511114666577
  30
 0
   9
@@ -823,9 +823,9 @@ $PLIMMIN
   9
 $PLIMMAX
  10
-210
- 20
 297
+ 20
+210
   9
 $UNITMODE
  70
@@ -1121,9 +1121,9 @@ AcDbViewportTableRecord
  21
 1
  12
-991.9271961413966
+400.3674889137797
  22
-503.786367756356
+228.265303359374
  13
 0
  23
@@ -1149,7 +1149,7 @@ AcDbViewportTableRecord
  37
 0
  40
-1746.042193838799
+549.8073637749526
  41
 1.685782556750299
  42
@@ -2247,7 +2247,7 @@ AcDbLayerTableRecord
   6
 CONTINUOUS
 370
-    0
+   35
 390
 F
   0
@@ -2293,7 +2293,7 @@ kóty
   6
 CONTINUOUS
 370
-    0
+   18
 390
 F
   0
@@ -2321,7 +2321,7 @@ AcDbSymbolTableRecord
 100
 AcDbTextStyleTableRecord
   2
-Standard
+STANDARD
  70
     0
  40
@@ -2335,7 +2335,7 @@ Standard
  42
 1
   3
-txt
+STANDARD
   4
 
   0
@@ -3141,7 +3141,7 @@ AcDbMText
   1
 @0-33mm
   7
-
+STANDARD
 210
 0
 220
@@ -3186,6 +3186,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -3244,6 +3246,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -3302,6 +3306,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -3362,6 +3368,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -3422,6 +3430,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -3482,6 +3492,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -3542,6 +3554,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -3636,8 +3650,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -3696,8 +3708,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -3758,8 +3768,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -3818,8 +3826,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -3878,8 +3884,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -3938,8 +3942,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -3998,8 +4000,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -4058,8 +4058,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -4118,8 +4116,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -4180,8 +4176,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -4240,8 +4234,6 @@ AcDbDimension
    33
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -4298,8 +4290,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -4360,8 +4350,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -4420,8 +4408,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -4480,8 +4466,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -4542,8 +4526,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -16244,8 +16226,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -16306,8 +16286,6 @@ AcDbDimension
    32
  71
     5
- 72
-    0
   3
 Standard
  53
@@ -16366,6 +16344,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -16424,6 +16404,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -16482,6 +16464,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -16540,6 +16524,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -16598,6 +16584,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -16656,6 +16644,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -16716,6 +16706,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -16774,6 +16766,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -17159,7 +17153,7 @@ AcDbMText
   1
 @16mm
   7
-
+STANDARD
 210
 0
 220
@@ -17204,6 +17198,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -17262,6 +17258,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -17320,6 +17318,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -17378,6 +17378,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -17438,6 +17440,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -17498,6 +17502,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -17558,6 +17564,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -17618,6 +17626,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -18242,6 +18252,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -18300,6 +18312,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -18358,6 +18372,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -18416,6 +18432,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -18474,6 +18492,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -18532,6 +18552,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -18592,6 +18614,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -18653,7 +18677,7 @@ AcDbMText
   1
 @33mm
   7
-
+STANDARD
 210
 0
 220
@@ -18698,6 +18722,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -19227,7 +19253,7 @@ AcDbMText
   1
 @46mm
   7
-
+STANDARD
 210
 0
 220
@@ -19272,6 +19298,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -19330,6 +19358,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -19388,6 +19418,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -19446,6 +19478,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -19506,6 +19540,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -20081,7 +20117,7 @@ AcDbMText
   1
 @57mm
   7
-
+STANDARD
 210
 0
 220
@@ -20126,6 +20162,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -21157,7 +21195,7 @@ AcDbMText
   1
 @74mm
   7
-
+STANDARD
 210
 0
 220
@@ -21202,6 +21240,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -21262,6 +21302,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -21322,6 +21364,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -21382,6 +21426,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -21442,6 +21488,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -21502,6 +21550,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -21562,6 +21612,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -21622,6 +21674,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -21680,6 +21734,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -22615,7 +22671,7 @@ AcDbMText
   1
 @74-97mm
   7
-
+STANDARD
 210
 0
 220
@@ -23489,7 +23545,7 @@ AcDbMText
   1
 @76mm
   7
-
+STANDARD
 210
 0
 220
@@ -23534,6 +23590,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -23592,6 +23650,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -23650,6 +23710,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -23708,6 +23770,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -23766,6 +23830,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -23826,6 +23892,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -24139,7 +24207,7 @@ AcDbMText
   1
 @85-97mm
   7
-
+STANDARD
 210
 0
 220
@@ -24184,6 +24252,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -24242,6 +24312,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -24302,6 +24374,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -24362,6 +24436,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -24422,6 +24498,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -24804,6 +24882,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -24864,6 +24944,8 @@ AcDbDimension
    32
  71
     5
+ 72
+    0
   3
 Standard
  53
@@ -24917,11 +24999,11 @@ AcDbPolyline
  20
 32.3036225301968
  10
-97.00000000000013
+97.00000000000014
  20
 60.48331343874349
  42
-0.2682932564171567
+0.2682932564171568
  10
 83.99999828038304
  20
@@ -24933,19 +25015,19 @@ AcDbPolyline
  42
 0.4142135831842525
  10
--1.598721155460225e-014
+-1.77635683940025e-014
  20
 57.99999860185564
  10
-3.552713678800501e-015
+7.105427357601002e-015
  20
 19.99999849327916
  42
-0.4142135598554333
+0.4142135598554332
  10
-20
+19.99999999999999
  20
--1.334804153430014e-006
+-1.334804160535441e-006
  10
 43.77498251315343
  20
@@ -24953,7 +25035,7 @@ AcDbPolyline
  42
 0.0874886635259239
  10
-53.87970517815738
+53.87970517815737
  20
 1.78173390361238
  10
@@ -25237,11 +25319,11 @@ ByLayer
 100
 AcDbBlockReference
   2
-bokorys-0-33
+pudorys
  10
-458.0928169145326
+299.7648653507447
  20
-86.12644241717371
+188.5206801922531
  30
 0
  41
@@ -25277,11 +25359,11 @@ ByLayer
 100
 AcDbBlockReference
   2
-bokorys-85-end
+trunk_roller_shutter_hull
  10
-372.7953991189148
+452.619470912031
  20
-80.70293652219777
+200.4093717359086
  30
 0
  41
@@ -25317,11 +25399,11 @@ ByLayer
 100
 AcDbBlockReference
   2
-bokorys-46
+bokorys-85-end
  10
-292.9713273257987
+295.5953568682541
  20
-70.48295700881533
+82.1098213522928
  30
 0
  41
@@ -25357,11 +25439,11 @@ ByLayer
 100
 AcDbBlockReference
   2
-pudorys
+bokorys-0-33
  10
-299.7648653507447
+387.558356782822
  20
-188.5206801922531
+96.56114991029634
  30
 0
  41
@@ -25397,11 +25479,11 @@ ByLayer
 100
 AcDbBlockReference
   2
-trunk_roller_shutter_hull
+bokorys-46
  10
-452.619470912031
+496.6001995386669
  20
-200.4093717359086
+93.27675705620463
  30
 0
  41
