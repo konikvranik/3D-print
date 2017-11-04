@@ -226,7 +226,8 @@ function getParameterDefinitions() {
       min : 0,
       max : 8,
       step : 1
-    }
+    },
+    {name : 'cuts', type : 'checkbox', checked : false, caption : "Produce sectioncuts:"}
   ];
 }
 
@@ -236,19 +237,30 @@ function main(params) {
 
   var p = part(97, 68, 68, 2.5);
 
-//  var result = [ {name : "model", caption : "Model", data : p} ];
-  var result = [ p ];
+  //  var result = [ {name : "model", caption : "Model", data : p} ];
 
-  var cuts = [ 16, 33, 57, 74, 76, 46, 85, 97 ];
-  var orthobasis;
-  for (var i = 0; i < cuts.length; i++) {
-    orthobasis = new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 1, 0, 0 ], [ cuts[i], 0, 0 ]));
-//    result.push({name : "proj-x-" + cuts[i], caption : "Projection on x: " + cuts[i], data : p.sectionCut(orthobasis)});
-    result.push( p.sectionCut(orthobasis));
+  if (params.cuts) {
+
+    var result = [];
+
+    var cuts = [ 16, 33, 46, 57, 74, 76, 96.9 ];
+
+    result.push(p.sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, 3 ]))));
+
+    for (var i = 0; i < cuts.length; i++) {
+
+      var o = [];
+      vector_text(0, 0, "@" + cuts[i] + "mm")
+          .forEach(function(pl) { o.push(rectangular_extrude(pl, {w : 1, h : 200}).translate([ -200, 0, -100 ])); });
+      result.push(
+          p.rotateY(90)
+              .union(o)
+              .sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -cuts[i] ])))
+              .translate([ 0, -100 - 100 * i ]));
+    }
+
+    return result;
+  } else {
+    return p;
   }
-  orthobasis = new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, 3 ]));
-//  result.push({name : "proj-z-3", caption : "Projection on z: 3", data : p.sectionCut(orthobasis)});
-  result.push( p.sectionCut(orthobasis));
-
-  return result;
 }
