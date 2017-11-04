@@ -232,23 +232,17 @@ function getParameterDefinitions() {
 }
 
 function main(params) {
+
   EXPAND = params.smooth > 0;
   SMOOTH = EXPAND ? params.smooth : 2;
 
   var p = part(97, 68, 68, 2.5);
 
-  //  var result = [ {name : "model", caption : "Model", data : p} ];
-
   if (params.cuts) {
-
-    var result = [];
-
     var cuts = [ 16, 33, 46, 57, 74, 76, 96.9 ];
-
+    var result = [];
     result.push(p.sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, 3 ]))));
-
     for (var i = 0; i < cuts.length; i++) {
-
       var o = [];
       vector_text(0, 0, "@" + cuts[i] + "mm")
           .forEach(function(pl) { o.push(rectangular_extrude(pl, {w : 1, h : 200}).translate([ -200, 0, -100 ])); });
@@ -258,7 +252,6 @@ function main(params) {
               .sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -cuts[i] ])))
               .translate([ 0, -100 - 100 * i ]));
     }
-
     return result;
   } else {
     return p;
