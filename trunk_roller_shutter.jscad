@@ -1,6 +1,7 @@
 // source: trunk_roller_shutter.jscad
 
 var EXPAND = true;
+var SMOOTH = 0;
 
 function expandIf(v, w) {
   var sc = [];
@@ -11,8 +12,10 @@ function expandIf(v, w) {
     mv.push(((v.getBounds()[1][ax[i]] + v.getBounds()[0][ax[i]]) / s) * -w);
     sc.push((s + 2 * w) / s);
   }
-  return EXPAND ? v.expand(w, CSG.defaultResolution3D) : v.scale(sc).translate(mv);
+  return EXPAND ? v.expand(w, fn(w) / 2) : v.scale(sc).translate(mv);
 }
+
+function fn(r) { return SMOOTH * 2 * 3.14 * log(r); }
 
 function roundCorners(obj, rs) {
   var cls = [];
@@ -37,7 +40,7 @@ function roundCorners(obj, rs) {
       default:
       }
       obj = obj.subtract(cube({size : [ rx, ry, z ]}).translate([ x, y, 0 ]))
-                .union(cylinder({r : r, h : z}).translate([ x + rx, y + ry, 0 ]));
+                .union(cylinder({r : r, h : z, fn : fn(r)}).translate([ x + rx, y + ry, 0 ]));
     }
   }
   return obj;
@@ -50,14 +53,14 @@ function partHull(x, y, z, r1, r2) {
   var r3 = 30;
   return roundCorners(cube([ x, y, z ]), [ r1, 0, r2, r2 ])
       .subtract(cube([ 50, 35, z ]).translate([ x - 15, 0, 0 ]))
-      .union(cylinder({r : r3, h : z}).translate([ x - r3 + 2, r3 + 8, 0 ]))
+      .union(cylinder({r : r3, h : z, fn : fn(r3)}).translate([ x - r3 + 2, r3 + 8, 0 ]))
       .subtract(cube([ 100, y, z ]).translate([ x, 0, 0 ]))
       .subtract(cube([ x, 100, z ]).translate([ 0, y, 0 ]))
 
       .subtract(
           cube([ 100, 100, z ]).translate([ 0, -100, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20)) // zkosit jednu stěnu
       .subtract(cube([ 10, 20, z ]).translate([ p - s, 0, 0 ])) // hole for bottom midle rounded corner
-      .union(cylinder({r : r, h : z})
+      .union(cylinder({r : r, h : z, fn : fn(r)})
                  .subtract(cube([ 2 * r, 2 * r, z ])
                                .translate([ -r, 10, 0 ])
                                .union(cube([ r, 2 * r, z ]).translate([ -r, -r, 0 ])))
@@ -69,7 +72,8 @@ function partHull(x, y, z, r1, r2) {
  * škvíra z boku
  **/
 function slot(x, y, z) {
-  return cube([ x, y - x / 2, z ]).union(cylinder({r : x / 2, h : z}).translate([ x / 2, y - x / 2, 0 ]));
+  return cube([ x, y - x / 2, z ])
+      .union(cylinder({r : x / 2, h : z, fn : fn(x / 2)}).translate([ x / 2, y - x / 2, 0 ]));
 }
 
 function slotWalls(x, y, z, w) {
@@ -80,9 +84,9 @@ function slotWalls(x, y, z, w) {
 }
 
 function cornerCircle(d, w, z, s) {
-  var v = cylinder({d : d - 2 * w, h : z - 2 * w});
+  var v = cylinder({d : d - 2 * w, h : z - 2 * w, fn : fn(d / 2)});
   return expandIf(v, w)
-      .subtract(cylinder({d : d - 2 * w, h : z}))
+      .subtract(cylinder({d : d - 2 * w, h : z, fn : fn(d / 2 - w)}))
       .subtract(cube([ d / 2, s, z ]).translate([ 0, -d / 2 + w, 0 ]));
 }
 
@@ -137,7 +141,7 @@ function shell(x, y, z, w) {
 
 function buttonHole(w) {
   var r = 100;
-  var cyl = cylinder({r : r, h : w});
+  var cyl = cylinder({r : r, h : w, fn : fn(r)});
   var sq = roundCorners(cube([ 21, 15, w ]).translate([ 0, 1, 0 ]), [ 2, 2, 2, 2 ]);
   var cc = cyl.intersect(cyl.translate([ 0, 2 * r - 17 ]))
                .translate([ 21 / 2, -r + 17, 0 ])
@@ -156,7 +160,7 @@ function part(x, y, z, w) {
   var cc = cornerCircle(8.5, w, z, 2.5).mirroredY();
   var p = 50 - 2.5;
   var prolis = cube([ 9, 1.25, 24 ]);
-  var screwHole = cylinder({d : 10, h : 20});
+  var screwHole = cylinder({d : 10, h : 20, fn : fn(5)});
 
   return shell(x - 2 * w, y - 2 * w, z, w)
       .union(slotWalls(12, 37, 30 - w, w).translate([ 25, 0, 0 ]))
@@ -183,10 +187,10 @@ function part(x, y, z, w) {
                  .subtract(cube([ 1, 11 - w, 54 - w ]).translate([ 0, 11 - w - 2, 54 - w - 12 ]))
                  .translate([ 16 - w, 0, 0 ]))
 
-      .union(
-          cylinder({d : 19, h : 7 - w})
-              .union(cylinder({d : 8, h : 20 - w}).subtract(cylinder({d : 5, h : 20 - w}).translate([ 0, 0, 7 - w ])))
-              .translate([ 74 - w, y - 27 - w, 0 ]))
+      .union(cylinder({d : 19, h : 7 - w, fn : fn(19 / 2)})
+                 .union(cylinder({d : 8, h : 20 - w, fn : fn(8 / 2)})
+                            .subtract(cylinder({d : 5, h : 20 - w, fn : fn(5 / 2)}).translate([ 0, 0, 7 - w ])))
+                 .translate([ 74 - w, y - 27 - w, 0 ]))
 
       .union(cube([ 20, 23 - w, 17.5 - w ])
                  .union(cube([ 11, 31 - w, 8 - w ]).translate([ 3 - 1.5, -8, 0 ]))
@@ -213,28 +217,15 @@ function part(x, y, z, w) {
 }
 
 function getParameterDefinitions() {
-  return [
-    {name : 'resolution', type : 'int', initial : 8, caption : "Smoothiness of model:"},
-    {name : 'expand', type : 'checkbox', checked : false, caption : "Smooth corners:"}
-  ];
+  return [ {name : 'smooth', type : 'int', initial : 0, caption : "Smoothiness of expand:"} ];
 }
 
 function main(params) {
-  CSG.defaultResolution3D = params.resolution;
-  CSG.defaultResolution2D = params.resolution;
-  EXPAND = params.expand;
-  //  return partHull(97, 68, 68, 20, 10);
+  EXPAND = params.smooth > 0;
+  SMOOTH = EXPAND ? params.smooth : 2;
+
   return part(97, 68, 68, 2.5)
       //.intersect(cube([200,200,1]).translate([-100,-100,3]))
       //.intersect(cube([50,200,200]).translate([85,-100,-100])).rotateY(90)
       ;
-}
-
-//only add this wrapper if not already present & we are not in command-line mode
-if(typeof wrappedMain === 'undefined' && typeof getParameterDefinitionsCLI !== 'undefined'){
-  const wrappedMain = main
-  main = function(){
-    var paramsDefinition = (typeof getParameterDefinitions !== 'undefined') ? getParameterDefinitions : undefined
-    return wrappedMain(getParameterDefinitionsCLI(paramsDefinition, {}))
-  }
 }
