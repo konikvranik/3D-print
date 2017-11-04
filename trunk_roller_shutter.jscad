@@ -221,10 +221,20 @@ function getParameterDefinitions() {
 
 function main(params) {
   CSG.defaultResolution3D = params.resolution;
+  CSG.defaultResolution2D = params.resolution;
   EXPAND = params.expand;
   //  return partHull(97, 68, 68, 20, 10);
   return part(97, 68, 68, 2.5)
       //.intersect(cube([200,200,1]).translate([-100,-100,3]))
       //.intersect(cube([50,200,200]).translate([85,-100,-100])).rotateY(90)
       ;
+}
+
+//only add this wrapper if not already present & we are not in command-line mode
+if(typeof wrappedMain === 'undefined' && typeof getParameterDefinitionsCLI !== 'undefined'){
+  const wrappedMain = main
+  main = function(){
+    var paramsDefinition = (typeof getParameterDefinitions !== 'undefined') ? getParameterDefinitions : undefined
+    return wrappedMain(getParameterDefinitionsCLI(paramsDefinition, {}))
+  }
 }
