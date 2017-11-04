@@ -15,7 +15,7 @@ function expandIf(v, w) {
   return EXPAND ? v.expand(w, fn(w) / 2) : v.scale(sc).translate(mv);
 }
 
-function fn(r) { return SMOOTH * 2 * 3.14 * log(r); }
+function fn(r) { return SMOOTH * 2 * sqrt(r/5); }
 
 function roundCorners(obj, rs) {
   var cls = [];
@@ -234,7 +234,7 @@ function getParameterDefinitions() {
 function main(params) {
 
   EXPAND = params.smooth > 0;
-  SMOOTH = EXPAND ? params.smooth : 2;
+  SMOOTH = EXPAND ? params.smooth : 8;
 
   var p = part(97, 68, 68, 2.5);
 
