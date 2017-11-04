@@ -217,15 +217,35 @@ function part(x, y, z, w) {
 }
 
 function getParameterDefinitions() {
-  return [ {name : 'smooth', type : 'int', initial : 0, caption : "Smoothiness of expand:"} ];
+  return [
+    {
+      name : 'smooth',
+      type : 'int',
+      initial : 0,
+      caption : "Smoothiness (if set to 0, general smoothiness is set to 2 and no corner expanding is done):",
+      min : 0,
+      max : 8,
+      step : 1
+    }
+  ];
 }
 
 function main(params) {
   EXPAND = params.smooth > 0;
   SMOOTH = EXPAND ? params.smooth : 2;
 
-  return part(97, 68, 68, 2.5)
-      //.intersect(cube([200,200,1]).translate([-100,-100,3]))
-      //.intersect(cube([50,200,200]).translate([85,-100,-100])).rotateY(90)
-      ;
+  var p = part(97, 68, 68, 2.5);
+
+  var result = [ {name : "model", caption : "Model", data : p} ];
+
+  var cuts = [ 16, 33, 57, 74, 76, 46, 85, 97 ];
+  var orthobasis;
+  for (var i = 0; i < cuts.length; i++) {
+    orthobasis = new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 1, 0, 0 ], [ cuts[i], 0, 0 ]));
+    result.push({name : "proj-x-" + cuts[i], caption : "Projection on x: " + cuts[i], data : p.sectionCut(orthobasis)});
+  }
+  orthobasis = new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, 3 ]));
+  result.push({name : "proj-z-3", caption : "Projection on z: 3", data : p.sectionCut(orthobasis)});
+
+  return result;
 }
