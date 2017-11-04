@@ -193,7 +193,7 @@ function part(x, y, z, w) {
 
 function getParameterDefinitions() {
   return [ {name : 'resolution', type : 'int', initial : 8, caption : "Smoothiness of model:"},
-           {name : 'expand', type : 'checkbox', checked : false, caption : "Smooth corners:"} ];
+           {name : 'expand', type : 'checkbox', checked : true, caption : "Smooth corners:"} ];
 }
 
 function main(params) {
