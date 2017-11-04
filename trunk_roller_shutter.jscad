@@ -166,8 +166,9 @@ function part(x, y, z, w) {
                  .translate([ 77 - w - 12, 4.3, 0 ]))
       .subtract(screwHole.rotateX(90).translate([ p + 23.2, 4, 60 - w ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20))
 
-      .union(
-          cube([ 7, 12, 43 - w ]).subtract(cube([ 7, 11, z ]).translate([ 1, 0, 0 ])).translate([ 88 - w, 18 - w, 0 ]))
+      .union(cube([ 7, 11.5, 43 - w ])
+                 .subtract(cube([ 7, 10.5, z ]).translate([ 1, 0, 0 ]))
+                 .translate([ 89 - w, 18.5 - w, 0 ]))
 
       .union(cube([ 1, 4, 43 - w ]).translate([ 77 - w - 1, 15, 0 ]))
 
