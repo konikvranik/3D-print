@@ -154,9 +154,9 @@ function part(x, y, z, w) {
   return shell(x - 2 * w, y - 2 * w, z, w)
       .union(slotWalls(12, 37, 30 - w, w).translate([ 25, 0, 0 ]))
 
-      .union(cube([ 12, 20, z - w ]).translate([ 77 - w - 12, 0, 0 ]))
+      .union(cube([ 12, 20, z - w ]).translate([ 77 - w - 12, 0, 0 ]).subtract(cube([ 20, 10, z ]).translate([ 77 - w - 12, 7, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20)) // zkosit jednu stěnu
+             )
       .subtract(cube([ 100, 100, z ]).translate([ 0, -100 - w, 0 ]).union(screwHole.rotateX(90).translate([ p + 23, 5, 60 - w ])).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20)) // zkosit jednu stěnu
-      .subtract(cube([ 20, 10, z ]).translate([ 77 - w - 12, 7, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20))                                                              // zkosit jednu stěnu
       .union(cube([ 1, 4, 43 - w ]).translate([ 77 - w - 1, 15, 0 ]))
 
       .union(cube([ 9, 10 - w, 20 - w ]).union(cube([ 1.5, 4, 18 - w ]).translate([ 9 - 1.5, -4, 0 ])).subtract(cube([ 9 - 3, 10 - w - 1.5, 20 - w ]).translate(1.5, 1.5, 0)).translate([ 30 - w - 1.5, y - 10 - w, 0 ]))
@@ -168,19 +168,19 @@ function part(x, y, z, w) {
       .union(cylinder({d : 19, h : 7 - w}).union(cylinder({d : 8, h : 20 - w}).subtract(cylinder({d : 5, h : 20 - w}).translate([ 0, 0, 7 - w ]))).translate([ 74 - w, y - 27 - w, 0 ]))
 
       .union(cube([ 20, 23 - w, 17.5 - w ])
-                 .union(cube([ 11, 31 - w, 8 - w ]).translate([ 3 - 1.5, -8, 0 ]))
-                 .subtract(cube([ 11 - 3, 31 - w - 1.5, z ]).translate([ 3, 1.5 - 8, 0 ]))
-                 .subtract(cube([ 20 - 1.5, 23 - w, 17.5 - w ]).translate([ 0, 1.5, 5 - w ]))
-                 .subtract(cube([ 20, 23 - w, 17.5 - w ]).translate([ 0, -14 + w, 10 - w ]))
-                 .subtract(cube([ 7 - 3, 23 - w - 1.5, z ]).translate([ 14.5, 1.5, 0 ]))
-                 .subtract(cube([ 6, 23 - w, z ]).translate([ 0, 0, 8 - w ]))
-                 .translate([ 62 - 20 - w, y - 23 - w, 0 ]))
+        .union(cube([ 11, 31 - w, 8 - w ]).translate([ 3 - 1.5, -8, 0 ]))
+        .subtract(
+          cube([ 11 - 3, 31 - w - 1.5, z ]).translate([ 3, 1.5 - 8, 0 ])
+          .union(cube([ 20 - 1.5, 23 - w, 17.5 - w ]).translate([ 0, 1.5, 5 - w ]))
+          .union(cube([ 7 - 3, 23 - w - 1.5, z ]).translate([ 14.5, 1.5, 0 ]))
+          .union(cube([ 20, 23 - w, 17.5 - w ]).translate([ 0, -14 + w, 10 - w ]))
+          .union(cube([ 6, 23 - w, z ]).translate([ 0, 0, 8 - w ]))
+          .union(cube([ 10.5, 21.5 - w, z ]).translate([ 2, 1.5, 0 ]))
+        ).translate([ 62 - 20 - w, y - 23 - w, 0 ])
+      )
 
       .union(cube([ 6, 1.5, 10.5 - w ])
-                 .union(cube([ 2, 3, 17.5 - w ]).translate([ 4, -1.5, 0 ]))
-                 .translate([ 61 - 6 - w, y - 32 - w, 0 ]))
-
-      .subtract(cube([ 10.5, 21.5 - w, z ]).translate([ 41.5, y - 21.5 - w, 0 ]))
+        .union(cube([ 2, 3, 17.5 - w ]).translate([ 4, -1.5, 0 ])).translate([ 61 - 6 - w, y - 32 - w, 0 ]))
 
       .subtract(prolis.union(prolis.translate([ 21, 0, 0 ])).translate([ 23 - w, y - 2 * w, z - 24 - w ]))
 
@@ -188,12 +188,14 @@ function part(x, y, z, w) {
 
       .subtract(screwHole.rotateY(-90).translate([ 1.5 - w, 31 - w, 60 - w ]))
 
+      .subtract(cube([200,200,10]).translate([-100,-100,-9]))
+
       .translate([ w, w, w ]); // zalícovat s osama
 }
 
 function getParameterDefinitions() {
   return [ {name : 'resolution', type : 'int', initial : 8, caption : "Smoothiness of model:"},
-           {name : 'expand', type : 'checkbox', checked : true, caption : "Smooth corners:"} ];
+           {name : 'expand', type : 'checkbox', checked : false, caption : "Smooth corners:"} ];
 }
 
 function main(params) {

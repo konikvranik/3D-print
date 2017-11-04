@@ -1,8 +1,7 @@
 
-render(convexity=4) {
-    projection(){
-        translate([0,0,-3]){
+render(convexity=6) 
+
+   projection(cut=false)
+        //difference(){
         import("trunk_roller_shutter.stl");
-    }
-    }
-}
+      
