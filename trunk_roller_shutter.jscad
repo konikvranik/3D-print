@@ -236,16 +236,19 @@ function main(params) {
 
   var p = part(97, 68, 68, 2.5);
 
-  var result = [ {name : "model", caption : "Model", data : p} ];
+//  var result = [ {name : "model", caption : "Model", data : p} ];
+  var result = [ p ];
 
   var cuts = [ 16, 33, 57, 74, 76, 46, 85, 97 ];
   var orthobasis;
   for (var i = 0; i < cuts.length; i++) {
     orthobasis = new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 1, 0, 0 ], [ cuts[i], 0, 0 ]));
-    result.push({name : "proj-x-" + cuts[i], caption : "Projection on x: " + cuts[i], data : p.sectionCut(orthobasis)});
+//    result.push({name : "proj-x-" + cuts[i], caption : "Projection on x: " + cuts[i], data : p.sectionCut(orthobasis)});
+    result.push( p.sectionCut(orthobasis));
   }
   orthobasis = new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, 3 ]));
-  result.push({name : "proj-z-3", caption : "Projection on z: 3", data : p.sectionCut(orthobasis)});
+//  result.push({name : "proj-z-3", caption : "Projection on z: 3", data : p.sectionCut(orthobasis)});
+  result.push( p.sectionCut(orthobasis));
 
   return result;
 }
