@@ -97,10 +97,10 @@ function slotWalls(x, y, z, w) {
 }
 
 function cornerCircle(d, w, z, s) {
-  var v = cylinder({d : d - 2 * w, h : z - 2 * w, fn : fn(d / 2)});
+  var v = cylinder({d : d - 2 * w, h : z, fn : fn(d / 2)});
   return expandIf(v, w)
-      .subtract(cylinder({d : d - 2 * w, h : z, fn : fn(d / 2 - w)}))
-      .subtract(cube([ d / 2, s, z ]).translate([ 0, -d / 2 + w, 0 ]));
+      .subtract(cylinder({d : d - 2 * w, h : z + w, fn : fn(d / 2 - w)}))
+      .subtract(cube([ d / 2, s, z + w ]).translate([ 0, -d / 2 + w, 0 ]));
 }
 
 function rolletHole(b, t, z, w) {
@@ -143,7 +143,7 @@ function shell(x, y, z, w) {
   var dc = 8;
   var rc = dc / 2;
 
-  var cc = cornerCircle(dc, 2, z, 2.5).mirroredY();
+  var cc = cornerCircle(dc, 2, z - 2 * w, 2.5).mirroredY();
 
   return expandedHull(x, y, z, w, r1, r2, rolletHoleFromTop, rolletHoleTop)
       .subtract(partHull(x, y, z, r1, r2, w).translate([ 0, 0, 0 ])) // vydlábnout vnitřek
@@ -257,13 +257,20 @@ function main(params) {
 
     result.push(p.sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, 3 ]))));
 
-    result.push(p.sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, 50 ]))).translate([ 0, -100 - 100 * (offset++) ]));
+    result.push(p.sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, 50 ])))
+                    .translate([ 0, -100 - 100 * (offset++) ]));
 
-    result.push(p.rotateX(-90).sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -67 ]))).translate([ 0, -100 - 100 * (offset++) ]));
+    result.push(p.rotateX(-90)
+                    .sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -67 ])))
+                    .translate([ 0, -100 - 100 * (offset++) ]));
 
-    result.push(p.rotateX(-90).sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -66 ]))).translate([ 0, -100 - 100 * (offset++) ]));
+    result.push(p.rotateX(-90)
+                    .sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -66 ])))
+                    .translate([ 0, -100 - 100 * (offset++) ]));
 
-    result.push(p.rotateX(-90).sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -64 ]))).translate([ 0, -100 - 100 * (offset++) ]));
+    result.push(p.rotateX(-90)
+                    .sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -64 ])))
+                    .translate([ 0, -100 - 100 * (offset++) ]));
 
     for (var i = 0; i < cuts.length; i++) {
       var o = [];
@@ -273,7 +280,7 @@ function main(params) {
           p.rotateY(90)
               .union(o)
               .sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -cuts[i] ])))
-              .translate([ 0, -100 - 100 * (i+offset) ]));
+              .translate([ 0, -100 - 100 * (i + offset) ]));
     }
     return result;
   } else {
