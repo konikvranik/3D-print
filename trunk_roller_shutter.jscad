@@ -12,10 +12,10 @@ function expandIf(v, w) {
     mv.push(((v.getBounds()[1][ax[i]] + v.getBounds()[0][ax[i]]) / s) * -w);
     sc.push((s + 2 * w) / s);
   }
-  return EXPAND ? v.expand(w, fn(w) / 2) : v.scale(sc).translate(mv);
+  return EXPAND ? v.expand(w, fn(w)) : v.scale(sc).translate(mv);
 }
 
-function fn(r) { return SMOOTH * 2 * sqrt(r/5); }
+function fn(r) { return SMOOTH * 2 * sqrt(r / 5); }
 
 function roundCorners(obj, rs) {
   var cls = [];
@@ -46,24 +46,37 @@ function roundCorners(obj, rs) {
   return obj;
 }
 
-function partHull(x, y, z, r1, r2) {
-  var p = 50 - 2.5;
-  var s = 7;  // posun středu kružnice
-  var r = 44; // poloměr prostřední spodní kružnice
-  var r3 = 30;
-  return roundCorners(cube([ x, y, z ]), [ r1, 0, r2, r2 ])
-      .subtract(cube([ 50, 35, z ]).translate([ x - 15, 0, 0 ]))
-      .union(cylinder({r : r3, h : z, fn : fn(r3)}).translate([ x - r3 + 2, r3 + 8, 0 ]))
-      .subtract(cube([ 100, y, z ]).translate([ x, 0, 0 ]))
-      .subtract(cube([ x, 100, z ]).translate([ 0, y, 0 ]))
+function rtCorner(x, y, z, w) {
+
+  var c1 = cylinder({r : 4 - w, h : z, fn : fn(4 - w)});
+  var c2 = cylinder({r : 16 - w, h : z, fn : fn(16 - w)});
+
+  return c2.subtract(cube([ 16, 2 * 16, z ]).translate([ 9, -16, 0 ]))
+      .subtract(cube([ 2 * 16, 9, z ]))
+      .union(c1.translate([ 8, 9, 0 ]))
+      .translate([ 0, -9, 0 ]);
+}
+
+function partHull(x, y, z, r1, r2, w) {
+  var p = 50 - w;
+  var r = 30; // poloměr prostřední spodní kružnice
+  var r3 = 20;
+  var s = 5.3;
+
+  return roundCorners(cube([ x, y, z ]), [ r1, 0, 0, r2 ])
+
+      .subtract(cube([ 50, 32.5 - w, z ]).translate([ 83.8 - w, 0, 0 ]))
+      .union(cylinder({r : r3, h : z, fn : fn(r3)})
+                 //.subtract(cube([ 2 * r3, r3, z ]).translate([ -r3, 0, 0 ]))
+                 .translate([ x - r3, 32.5 - w, 0 ]))
+
+      .subtract(cube([ 16, 16, z ]).translate([ 85 - w, y - 7 + w, 0 ]))
+      .union(rtCorner(x, y, z, w).translate([ 85 - w, y - 7 + w, 0 ]))
 
       .subtract(
           cube([ 100, 100, z ]).translate([ 0, -100, 0 ]).rotate([ p, 0, 0 ], [ 0, 0, 1 ], 20)) // zkosit jednu stěnu
       .subtract(cube([ 10, 20, z ]).translate([ p - s, 0, 0 ])) // hole for bottom midle rounded corner
       .union(cylinder({r : r, h : z, fn : fn(r)})
-                 .subtract(cube([ 2 * r, 2 * r, z ])
-                               .translate([ -r, 10, 0 ])
-                               .union(cube([ r, 2 * r, z ]).translate([ -r, -r, 0 ])))
                  .translate([ p - s, r, 0 ])) // bottom midle rounded corner - not too smooth
       ;
 }
@@ -109,8 +122,8 @@ function rolletHole(b, t, z, w) {
 function expandedHull(x, y, z, w, r1, r2, rolletHoleFromTop, rolletHoleTop) {
 
   var rolletHoleBottom = 10;
-  var v = partHull(x, y, z - 2 * w, r1, r2)
-              .subtract(cube([ 15, 32, z ]).translate([ 0, y - 32 + w, 50 - 2 * w ])) // vyříznout výsek
+  var v = partHull(x, y, z - 2 * w, r1, r2, w)
+              .subtract(cube([ 16.5, 32, z ]).translate([ 0, y - 32 + w, 50 - 2 * w ])) // vyříznout výsek
               .subtract(slot(12 - (EXPAND ? 0 : 2 * w), 37 - (EXPAND ? w : 2 * w), 30)
                             .translate([ 25 + (EXPAND ? 0 : w), 0, 0 ])) // vyříznout škvíru
               .subtract(rolletHole(rolletHoleBottom + 2 * w, rolletHoleTop + 2 * w, z, w)
@@ -124,23 +137,23 @@ function shell(x, y, z, w) {
   var rolletHoleFromTop = 11;
   var rolletHoleTop = 20;
 
-  var r1 = 20 - w;
-  var r2 = 10 - w;
+  var r1 = 18 - w;
+  var r2 = 14 - w;
 
-  var dc = 8.5;
+  var dc = 8;
   var rc = dc / 2;
 
-  var cc = cornerCircle(dc, w, z, 2.5).mirroredY();
+  var cc = cornerCircle(dc, 2, z, 2.5).mirroredY();
 
   return expandedHull(x, y, z, w, r1, r2, rolletHoleFromTop, rolletHoleTop)
-      .subtract(partHull(x, y, z, r1, r2).translate([ 0, 0, 0 ])) // vydlábnout vnitřek
-      .union(cc.translate([ 15, y - rc + w, 0 ]))
-      .union(cc.mirroredX().rotateZ(-45).translate([ x - rc + w, y - rc + w - (rolletHoleFromTop - dc), 0 ]))
+      .subtract(partHull(x, y, z, r1, r2, w).translate([ 0, 0, 0 ])) // vydlábnout vnitřek
+      .union(cc.translate([ 16.5, y - rc + w, 0 ]))
+      .union(cc.mirroredX().rotateZ(-32).translate([ x - rc + w, y - rc + w - (rolletHoleFromTop - dc), 0 ]))
       .union(cc.rotateZ(-90).translate([ x - rc + w, y - rc + w - (rolletHoleFromTop + rolletHoleTop), 0 ]));
 }
 
 function buttonHole(w) {
-  var r = 100;
+  var r = 40;
   var cyl = cylinder({r : r, h : w, fn : fn(r)});
   var sq = roundCorners(cube([ 21, 15, w ]).translate([ 0, 1, 0 ]), [ 2, 2, 2, 2 ]);
   var cc = cyl.intersect(cyl.translate([ 0, 2 * r - 17 ]))
@@ -157,7 +170,6 @@ function rhomboid(x, y, z, a) {
 }
 
 function part(x, y, z, w) {
-  var cc = cornerCircle(8.5, w, z, 2.5).mirroredY();
   var p = 50 - 2.5;
   var prolis = cube([ 9, 1.25, 24 ]);
   var screwHole = cylinder({d : 10, h : 20, fn : fn(5)});
@@ -234,14 +246,25 @@ function getParameterDefinitions() {
 function main(params) {
 
   EXPAND = params.smooth > 0;
-  SMOOTH = EXPAND ? params.smooth : 8;
+  SMOOTH = EXPAND ? params.smooth : 14;
 
   var p = part(97, 68, 68, 2.5);
 
   if (params.cuts) {
     var cuts = [ 16, 33, 46, 57, 74, 76, 96.9 ];
     var result = [];
+    var offset = 0;
+
     result.push(p.sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, 3 ]))));
+
+    result.push(p.sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, 50 ]))).translate([ 0, -100 - 100 * (offset++) ]));
+
+    result.push(p.rotateX(-90).sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -67 ]))).translate([ 0, -100 - 100 * (offset++) ]));
+
+    result.push(p.rotateX(-90).sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -66 ]))).translate([ 0, -100 - 100 * (offset++) ]));
+
+    result.push(p.rotateX(-90).sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -64 ]))).translate([ 0, -100 - 100 * (offset++) ]));
+
     for (var i = 0; i < cuts.length; i++) {
       var o = [];
       vector_text(0, 0, "@" + cuts[i] + "mm")
@@ -250,7 +273,7 @@ function main(params) {
           p.rotateY(90)
               .union(o)
               .sectionCut(new CSG.OrthoNormalBasis(CSG.Plane.fromNormalAndPoint([ 0, 0, 1 ], [ 0, 0, -cuts[i] ])))
-              .translate([ 0, -100 - 100 * i ]));
+              .translate([ 0, -100 - 100 * (i+offset) ]));
     }
     return result;
   } else {
