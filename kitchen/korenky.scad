@@ -6,10 +6,17 @@ module cell(w,h,d,c,c1) {
   }
 }
 
-module box(w,h,d,c) {
+module box(t,w,h,d,c,handle,ts) {
   difference() {
     cube([w,h,d]);
     translate([c,c,c]) cube([w-2*c,h-2*c,d-c+.1]);
+  }
+  translate([w/2,-handle[1],30]) {
+    translate([0,0,handle[2]/2+c]) rotate([90,0,0]) { linear_extrude(3) text(t,halign="center", valign="top", language="cs", script="utf8", size=ts); };
+    translate([0, 10,0]) minkowski() {
+      cube(handle, center=true);
+      sphere(c);
+    };
   }
 }
 
@@ -22,4 +29,8 @@ s = .2;
 
 cell(w,h,d,c,c1);
 
-translate([c+s,-h+c,0]) box(w-2*c-2*s,w-2*c-2*s,w-2*c-2*s,c);
+koreni = ["pepř", "bobkový list"];
+i=0;
+for (i = [0: len(koreni)-1]) {
+  translate([c+s+w*i,-h+c,0]) box(koreni[i], w-2*c-2*s,w-2*c-2*s,w-2*c-2*s,c,[40,20,4],6);
+};
