@@ -20,6 +20,14 @@ module box(t,w,h,d,c,handle,ts) {
   }
 }
 
+module rack(size, w, h, c, c1) {
+  for (x = [0:size[0]-1]) {
+    for (y = [0:size[1]-1]) {
+      translate([x*(w-c),0,y*(h-c),]) cell(w,h,d,c,c1);
+    }
+  }
+}
+
 w = 49;
 h = 49;
 d = 49;
@@ -27,7 +35,7 @@ c = 1;
 c1 = .5;
 s = .2;
 
-cell(w,h,d,c,c1);
+rack([4,3],w,h,c,c1);
 
 koreni = ["pepř", "bobkový list"];
 i=0;
