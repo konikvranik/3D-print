@@ -24,9 +24,12 @@ module box(w,h,d,c,handle,ts) {
 }
 
 module male(h,w,d) {
-    translate([h/2,0,-d/2]) difference() {
-        translate([0,0,0]) rotate([-90,0,0]) cylinder(d=d,h=w);
-        translate([-d/2,-1,-d]) cube([d,w+2,d]);
+    union() {
+        translate([h/2,0,-d/2]) difference() {
+            translate([0,0,0]) rotate([-90,0,0]) cylinder(d=d,h=w);
+            translate([-d/2,-1,-d]) cube([d,w+2,d]);
+            translate([0,w-d,0]) sphere(d/4);
+        }
     }
 }
 
@@ -37,18 +40,34 @@ module female(h,w,d) {
     }
 }
 
+module connectors(w,h,d,c,size) {
+  difference(){
+    union() {
+      for (y = [0:30:h]) {
+        translate([c,0,y+30]) rotate([0,90,0]) male(30,d,6);
+        translate([w+c,0,y+30]) rotate([0,90,0]) female(30,d,6.2);
+        }
+    }
+    translate([-d,-c,h+c]) cube([w+2*c+2*d,d+2*c,h+2*c]);
+  }
+  difference() {
+      union(){
+          for (x = [0:30:w]) {
+            translate([x,0,c]) male(30,d,6);
+            translate([x,0,h+c]) female(30,d,6.2);
+          }
+      }
+      translate([w+2*c,-c,-d]) cube([w+2*c,d+2*c,h+2*c+2*d]);
+  }
+}
+
 module rack(size, w, h, d, c, c1) {
   for (x = [0:size[0]-1]) {
     for (y = [0:size[1]-1]) {
       translate([x*(w-c),0,y*(h-c)]) cell(w,d,h,c,c1);
     }
-    translate([x*(w-c),0,c]) male(w,d,6);
-    translate([x*(w-c),0,(size[1]*(h-c))+c]) female(w,d,6.2);
   }
-  for (y = [0:size[1]-1]) {
-    translate([c,0,h+y*(h-c)]) rotate([0,90,0]) male(h,d,6);
-    translate([(size[0]*(w-c))+c,0,h+y*(h-c)]) rotate([0,90,0]) female(h,d,6.2);
-  }
+  connectors(size[0]*(w-c),size[1]*(h-c),d,c,size);
 }
 
 w = 49;
@@ -60,4 +79,4 @@ s = .2;
 
 rack([4,3],w,h,d,c,c1);
 
-translate([c+s,-h+c,0]) box(w-2*c-2*s,d-2*c-2*s,h-2*c-2*s,c,[1,10,h/3-2*c],6);
+//translate([c+s,-h+c,0]) box(w-2*c-2*s,d-2*c-2*s,h-2*c-2*s,c,[1,10,h/3-2*c],6);
