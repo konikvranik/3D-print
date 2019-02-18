@@ -6,49 +6,48 @@ module cell(w,h,d,c,c1) {
   }
 }
 
-module box(t,w,h,d,c,handle,ts) {
+module box(w,h,d,c,handle,ts) {
   color([.4,.1,.1,.9]) difference() {
     cube([w,h,d]);
     translate([c,c,c]) cube([w-2*c,h-2*c,d-c+.1]);
   }
-  color([.4,.1,.1,.9]) translate([w/2,-handle[1],30]) {
-    translate([0,0,handle[2]/2+c]) rotate([90,0,0]) { linear_extrude(3) text(t,halign="center", valign="top", language="cs", script="utf8", size=ts); };
-    translate([0, 10,-5]) minkowski() {
+  color([.4,.1,.1,.9]) translate([w/2,-handle[1],c+h/2]) {
+    translate([0, 5,0]) minkowski() {
       cube(handle, center=true);
       sphere(c);
     };
-    translate([0, 0,-5]) minkowski() {
-      cube([handle[0]*2,handle[1]/10,handle[2]], center=true);
+    minkowski() {
+      cube([handle[0]*2,handle[0],handle[2]], center=true);
       sphere(c);
     };
   }
 }
 
-module male(h,d) {
+module male(h,w,d) {
     translate([h/2,0,-d/2]) difference() {
-        translate([0,0,0]) rotate([-90,0,0]) cylinder(d=d,h=h);
-        translate([-d/2,-1,-d]) cube([d,h+2,d]);
+        translate([0,0,0]) rotate([-90,0,0]) cylinder(d=d,h=w);
+        translate([-d/2,-1,-d]) cube([d,w+2,d]);
     }
 }
 
-module female(h,d) {
+module female(h,w,d) {
     difference() {
-        cube([h,h,d/2-c]);
-        translate([0,-1,d/2]) male(h+2,d+.2);
+        cube([h,w,d/2-c]);
+        translate([0,-1,d/2]) male(h+2,w+2,d+.2);
     }
 }
 
-module rack(size, w, h, c, c1) {
+module rack(size, w, h, d, c, c1) {
   for (x = [0:size[0]-1]) {
     for (y = [0:size[1]-1]) {
-      translate([x*(w-c),0,y*(h-c)]) cell(w,h,d,c,c1);
+      translate([x*(w-c),0,y*(h-c)]) cell(w,d,h,c,c1);
     }
-    translate([x*(w-c),0,c]) male(w,6);
-    translate([x*(w-c),0,(size[1]*(h-c))+c]) female(w,6.2);
+    translate([x*(w-c),0,c]) male(w,d,6);
+    translate([x*(w-c),0,(size[1]*(h-c))+c]) female(w,d,6.2);
   }
   for (y = [0:size[1]-1]) {
-    translate([c,0,h+y*(h-c)]) rotate([0,90,0]) male(h,6);
-    translate([(size[0]*(w-c))+c,0,h+y*(h-c)]) rotate([0,90,0]) female(h,6.2);
+    translate([c,0,h+y*(h-c)]) rotate([0,90,0]) male(h,d,6);
+    translate([(size[0]*(w-c))+c,0,h+y*(h-c)]) rotate([0,90,0]) female(h,d,6.2);
   }
 }
 
@@ -59,10 +58,6 @@ c = 1;
 c1 = .5;
 s = .2;
 
-rack([4,3],w,h,c,c1);
+rack([4,3],w,h,d,c,c1);
 
-koreni = [""];
-i=0;
-for (i = [0: len(koreni)-1]) {
-  translate([c+s+w*i,-h+c,0]) box(koreni[i], w-2*c-2*s,w-2*c-2*s,w-2*c-2*s,c,[4,20,40],6);
-};
+translate([c+s,-h+c,0]) box(w-2*c-2*s,d-2*c-2*s,h-2*c-2*s,c,[1,10,h/3-2*c],6);
