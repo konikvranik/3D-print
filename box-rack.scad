@@ -23,20 +23,24 @@ module box(w,h,d,c,handle,ts) {
   }
 }
 
-module male(h,w,d) {
+module male(step,h,d) {
     union() {
-        translate([h/2,0,-d/2]) difference() {
-            translate([0,0,0]) rotate([-90,0,0]) cylinder(d=d,h=w);
-            translate([-d/2,-1,-d]) cube([d,w+2,d]);
-            translate([0,w-d,0]) sphere(d/4);
+        translate([step/2,0,-d/2]) difference() {
+            translate([0,0,0]) rotate([-90,0,0]) cylinder(d=d,h=h,$fn=6);
+            translate([-d/2,-1,-d]) cube([d,h+2,d]);
+            translate([0,h-d,0]) sphere(d/4);
         }
     }
 }
 
-module female(h,w,d) {
+module female(step,h,d) {
     difference() {
-        cube([h,w,d/2-c]);
-        translate([0,-1,d/2]) male(h+2,w+2,d+.2);
+        cube([step,h,d/2-c]);
+        dist=.15;
+        translate([0,-dist-1,d/2]) minkowski() {
+            male(step,h+2,d+dist);
+            sphere(dist);
+        }
     }
 }
 
@@ -70,6 +74,19 @@ module rack(size, w, h, d, c, c1) {
   connectors(size[0]*(w-c),size[1]*(h-c),d,c,size);
 }
 
+module bottom(w,d,c) {
+    thick=6.2;
+  difference() {
+      translate([0,0,-thick/2+c-s]) union(){
+          for (x = [0:30:w]) {
+            translate([x,0,0]) female(30,d,thick);
+          }
+      }
+      translate([w-2*c,-c,-d]) cube([w+2*c,d+2*c,h+2*c+2*d]);
+  }
+  translate([0,-d,-thick/2-s]) cube([w,2*d,c]);
+}
+
 w = 49;
 h = 49;
 d = 49;
@@ -77,6 +94,8 @@ c = 1;
 c1 = .5;
 s = .2;
 
-rack([4,3],w,h,d,c,c1);
+//rack([4,3],w,h,d,c,c1);
 
-//translate([c+s,-h+c,0]) box(w-2*c-2*s,d-2*c-2*s,h-2*c-2*s,c,[1,10,h/3-2*c],6);
+//translate([c+s,c+s,c+s]) box(w-2*c-2*s,d-2*c-2*s,h-2*c-2*s,c,[1,10,h/3-2*c],6);
+
+bottom((w)*4,d,c);
