@@ -1,8 +1,9 @@
-diameter = 40;
 wall=1;
-text=["2K2","3K3"];
-border=1;
-inner=6.2;
+diameter = 40-2*wall;
+text=["2K2","10K","200K","49.9K","100K","diode","uni-T","10µF","4K7","NPN"];
+textsize=2.9;
+border=1.2;
+inner=6;
 width = 2*border+inner;
 
 module body() {
@@ -35,7 +36,7 @@ module dispenser(text) {
             translate([-1,inner-border-1+wall,wall]) cube([inner-border,diameter/2-5,width]);
         }
         translate([inner-border-wall,diameter+wall-20-15,wall]) rotate([0,0,-25]) cube([wall,5.1,width]);
-        translate([inner+wall,(diameter+wall-20-15)/2,width/2+wall]) rotate([90,-90,90]) linear_extrude(1) text(text,valign="center", halign="center", size=4);
+        translate([inner+wall,(diameter+wall-20-15)/2,width/2+wall]) rotate([90,-90,90]) linear_extrude(1) text(text,valign="center", halign="center", size=textsize);
     }
 }
 
