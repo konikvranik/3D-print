@@ -1,20 +1,19 @@
-width = 8;
+width = 12;
 height=6;
 border=1;
 thickness=1.5;
 box_size=50;
 //text=["2K2","10K","200K","49.9K","100K","diode","uni-T","10µF","4K7","NPN"];
-text=["NPN"];
-textsize=5;
+text=["1117", "470µF","150µF"];
+textsize=4;
 wall=1;
 
 diameter = box_size-2*wall;
-space=.2;
 textplace=15;
 parthole=15;
 dispenserradius=10;
 
-function width() = width+2*space;
+function width() = width+.5;
 function inner() = width()-2*border;
 
 module body() {
