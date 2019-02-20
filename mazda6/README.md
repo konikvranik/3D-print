@@ -2,4 +2,4 @@
 
 ## Trunk roller shutter
 
-<a href="trunk_roller_side_cover"><img alt="Trunk roller shutter" src="mazda6/trunk_roller_side_cover/docs/img/trunk_roller_shutter.jpg" width="100px"/></a>
+<a href="trunk_roller_side_cover"><img alt="Trunk roller shutter" src="trunk_roller_side_cover/docs/img/trunk_roller_shutter.jpg" width="100px"/></a>
