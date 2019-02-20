@@ -1,4 +1,4 @@
-boxes=[["µUSB",16,6,50,4],["PNP",12,6,50,4]];
+boxes=[["2K2",8,6,50,4],["µUSB",16,6,50,4],["PNP",12,6,50,4]];
 
 border=1;
 thickness=1.5;
@@ -7,7 +7,7 @@ textplace=15;
 parthole=15;
 dispenserradius=10;
 
-module body(width,diameter) {
+module body(width, diameter) {
     difference() {
         cube([diameter+2*wall,diameter+2*wall,width+2*wall]);
         union() {
@@ -18,7 +18,7 @@ module body(width,diameter) {
     }
 }
 
-module dispenser(text, width,height,diameter,textsize) {
+module dispenser(text, width, height, diameter, textsize) {
     function inner() = width-2*border;
     union() {
         difference() {
@@ -55,14 +55,16 @@ module dispenser(text, width,height,diameter,textsize) {
 
 module hull(text, width, height, diameter,textsize) {
     body(width,diameter);
-    translate([diameter+2*wall,0,0]) dispenser(text, width, height, diameter,textsize);
+    translate([diameter+2*wall,0,0]) dispenser(text, width, height, diameter, textsize);
 }
+
+function displace(i) = ( i > 0 ? boxes[i-1][1] + 2*wall + 1 + displace(i-1) : 0 );
 
 rotate([-90,0,180]) {
     for (i=[0:len(boxes)-1]){
         box=boxes[i];
         width=box[1]+.5;
         diameter=box[3]-2*wall;
-        translate([0,0,(i)*-(width + 2*wall + 1)]) hull(box[0],width,box[2],diameter,box[4]);
+        translate([0,0,displace(i)]) hull(box[0], width, box[2], diameter, box[4]);
     }
 }
