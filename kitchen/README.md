@@ -2,4 +2,4 @@
 
 ## Egg fridge plate
 
-<img alt="Egg fridge plate" src="kitchen/img/20190220_135533.jpg" width="250px"/>
+<img alt="Egg fridge plate" src="img/20190220_135533.jpg" width="250px"/>
