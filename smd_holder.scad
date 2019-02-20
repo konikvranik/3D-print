@@ -35,8 +35,8 @@ module dispenser(text) {
             translate([inner-.1,diameter+wall-textplace-parthole,wall]) cube([border+wall+.2,4,width]);
         }
         difference() {
-            translate([-dispenserradius,0,wall])
-                cube([dispenserradius+inner-border,diameter+wall-textplace-parthole,width]);
+            translate([-dispenserradius+inner-border,0,wall])
+                cube([dispenserradius,diameter+wall-textplace-parthole,width]);
             translate([-dispenserradius+inner-border-wall,dispenserradius+wall,0])
                 cylinder(r=dispenserradius, h=width+2*wall);
             translate([-dispenserradius+inner-border-wall-1,dispenserradius+wall,0])
