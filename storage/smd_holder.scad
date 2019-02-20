@@ -57,13 +57,27 @@ module hull(text, width, height, diameter,textsize) {
     translate([diameter+2*wall,0,0]) dispenser(text, width, height, diameter, textsize);
 }
 
-function displace(i) = ( i > 0 ? boxes[i-1][1] + 2*wall + 1 + displace(i-1) : 0 );
-
-rotate([-90,0,180]) {
-    for (i=[0:len(boxes)-1]){
-        box=boxes[i];
-        width=box[1]+.5;
-        diameter=box[3]-2*wall;
-        translate([0,0,displace(i)]) hull(box[0], width, box[2], diameter, box[4]);
+module tower(width,height) {
+    translate([width/2,width/2,2*wall]) difference() {
+        cube([width+2*wall+.4,width,height]);
+        translate([wall,wall,wall]) cube([width+.4,width-2*wall,height-2*wall]);
+        translate([wall+.2,-wall,wall]) cube([width,width,height-2*wall]);
     }
+    cube([2*width+2*wall+.4, 2*width,3*wall]);
 }
+
+module multiple_boxes() {
+    function displace(i) = ( i > 0 ? boxes[i-1][1] + 2*wall + 1 + displace(i-1) : 0 );
+
+    rotate([-90,0,180]) {
+        for (i=[0:len(boxes)-1]){
+            box=boxes[i];
+            width=box[1]+.5;
+            diameter=box[3]-2*wall;
+            translate([0,0,displace(i)]) hull(box[0], width, box[2], diameter, box[4]);
+        }
+}
+}
+
+//multiple_boxes();
+tower(50,200);
