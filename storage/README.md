@@ -2,8 +2,8 @@
 
 ## Rack with shelves
 
-<img alt="Shelve rack" src="img/20190220_144334.jpg" width="250px"/>
+<a href="box-rack.scad"><img alt="Shelve rack" src="img/20190220_144334.jpg" width="250px"/></a>
 
 ## Box with dispenser for SMD strip
 
-<img alt="SMD box with dispenser" src="img/20190220_083147.jpg" width="250px"/>
+<a href="smd_holder.scad"><img alt="SMD box with dispenser" src="img/20190220_083147.jpg" width="250px"/></a>
