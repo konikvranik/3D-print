@@ -6,4 +6,4 @@
 
 ## Box with dispenser for SMD strip
 
-<img alt="Shelve rack" src="img/20190220_083147.jpg" width="250px"/>
+<img alt="SMD box with dispenser" src="img/20190220_083147.jpg" width="250px"/>
