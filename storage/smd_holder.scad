@@ -83,11 +83,14 @@ module dispenser(text, width, height, diameter, textsize) {
                 cube([height+1,diameter+2*wall+.1,inner()]);
             translate([height-thickness,0,wall])
                 cube([thickness,diameter+2*wall+.1,width]);
-            translate([height-.1,diameter+wall-textplace,wall])
+            translate([height-.1,diameter+wall-textplace-wall/2,wall])
                 cube([thickness+wall+.2,textplace,width]);
-            translate([height-.1,diameter+wall-textplace-parthole,wall])
+            translate([height-.1,diameter+wall-textplace-parthole,wall]) 
                 cube([thickness+wall+.2,stripehole,width]);
         }
+        translate([height+wall/2,diameter+wall-textplace-wall/2,wall]) 
+          cylinder(d=wall, h=width);
+
         difference() {
             translate([-dispenserradius+height-thickness,0,wall])
                 cube([dispenserradius,diameter+wall-textplace-parthole,width]);
