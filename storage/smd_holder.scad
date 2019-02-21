@@ -49,6 +49,11 @@ parthole=15;
 */
 dispenserradius=10;
 
+/**
+*
+*/
+stripehole=4;
+
 module body(width, diameter) {
     difference() {
         cube([diameter+2*wall,diameter+2*wall,width+2*wall]);
@@ -62,6 +67,9 @@ module body(width, diameter) {
 
 module dispenser(text, width, height, diameter, textsize) {
     function inner() = width-2*border;
+    length1 = sqrt((thickness+2*wall)*(thickness+2*wall) + stripehole*stripehole);
+    length = sqrt(length1*length1 - wall*wall);
+    angle = -atan((thickness+2*wall)/stripehole) + asin(wall/length1);
     union() {
         difference() {
             cube([height+wall,diameter+2*wall,width+2*wall]);
@@ -78,7 +86,7 @@ module dispenser(text, width, height, diameter, textsize) {
             translate([height-.1,diameter+wall-textplace,wall])
                 cube([thickness+wall+.2,textplace,width]);
             translate([height-.1,diameter+wall-textplace-parthole,wall])
-                cube([thickness+wall+.2,4,width]);
+                cube([thickness+wall+.2,stripehole,width]);
         }
         difference() {
             translate([-dispenserradius+height-thickness,0,wall])
@@ -88,8 +96,8 @@ module dispenser(text, width, height, diameter, textsize) {
             translate([-dispenserradius+height-thickness-wall-1,dispenserradius+wall,0])
                 cube([dispenserradius+1,diameter,width+2*wall]);
         }
-        translate([height-thickness-wall,diameter+wall-textplace-parthole,wall]) rotate([0,0,-25])
-            cube([wall,5.1,width]);
+        translate([height-thickness-wall,diameter+wall-textplace-parthole,wall]) rotate([0,0,angle])
+            cube([wall,length,width]);
         translate([height+wall,(diameter+wall-textplace-parthole)/2,width/2+wall]) rotate([90,0,90])
             linear_extrude(1) text(text,valign="center", halign="center", size=textsize);
     }
