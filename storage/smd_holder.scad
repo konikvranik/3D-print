@@ -111,12 +111,14 @@ module hull(text, width, height, diameter,textsize) {
     translate([diameter+2*wall,0,0]) dispenser(text, width, height, diameter, textsize);
 }
 
-module tower(width,height) {
+module tower(width,height,count) {
   translate([3*width,0,width]) rotate([-90,0,180]) {
-    translate([width/2,width/2,2*wall]) difference() {
-        cube([width+2*wall+.4,width,height]);
-        translate([wall,wall,wall]) cube([width+.4,width-2*wall,height-2*wall]);
-        translate([wall+.2,-wall,wall]) cube([width,width,height-2*wall]);
+    for (i=[0:count-1]) {
+      translate([width/2,width/2,2*wall+i*(height+wall)]) difference() {
+          cube([width+2*wall+.4,width,height+2*wall]);
+          translate([wall,wall,wall]) cube([width+.4,width-2*wall,height]);
+          translate([wall+.2,-wall,wall]) cube([width,width,height]);
+      }
     }
     cube([2*width+2*wall+.4, 2*width,3*wall]);
   }
@@ -136,4 +138,4 @@ module multiple_boxes() {
 }
 
 multiple_boxes();
-tower(50,200);
+tower(50,50,4);
