@@ -112,12 +112,14 @@ module hull(text, width, height, diameter,textsize) {
 }
 
 module tower(width,height) {
+  translate([3*width,0,width]) rotate([-90,0,180]) {
     translate([width/2,width/2,2*wall]) difference() {
         cube([width+2*wall+.4,width,height]);
         translate([wall,wall,wall]) cube([width+.4,width-2*wall,height-2*wall]);
         translate([wall+.2,-wall,wall]) cube([width,width,height-2*wall]);
     }
     cube([2*width+2*wall+.4, 2*width,3*wall]);
+  }
 }
 
 module multiple_boxes() {
