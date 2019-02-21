@@ -1,9 +1,52 @@
-boxes=[["2K2",8,6,50,5],["10K",8,6,50,5],["200K",8,6,50,5],["49K9",8,6,50,5],["100K",8,6,50,5],["diode",8,6,50,5],["NFET",8,6,50,5],["10µF",8,6,50,5],["4K7",8,6,50,5],["NPN",8,6,50,5],["1117",12,6,50,5],["470µF",12,6,50,4],["150µF",12,6,50,4],["µUSB",16,6,50,5]];
+/**
+ * list of boxes to print.
+ * Each box is represented by vertor consisting of [BOX_LABEL, WIDTH_OF_STRIP, HEIGHT_OF_STRIP, SIZE_OF_CASE, TEXT_SIZE ]
+ * Inside component there is extra space added to WIDTH_OF_STRIP to allow free movement of strip.
+ */
+boxes=[
+    ["2K2",8,6,50,5],
+    ["10K",8,6,50,5],
+    ["200K",8,6,50,5],
+    ["49K9",8,6,50,5],
+    ["100K",8,6,50,5],
+    ["diode",8,6,50,5],
+    ["NFET",8,6,50,5],
+    ["10µF",8,6,50,5],
+    ["4K7",8,6,50,5],
+    ["NPN",8,6,50,5],
+    ["1117",12,6,50,5],
+    ["470µF",12,6,50,4],
+    ["150µF",12,6,50,4],
+    ["µUSB",16,6,50,5]];
+
+/**
+* width of rails leading the strip
+*/
 border=1;
+
+/**
+* Thiskness of strip in the rails
+*/
 thickness=1.5;
+
+/**
+* Width of box perimeters
+*/
 wall=1;
+
+/**
+* length of with text
+*/
 textplace=15;
+
+/**
+* length of hole for extracting SMD parts
+*/
 parthole=15;
+
+/**
+* Radius of arc leading strip to dispenser
+*/
 dispenserradius=10;
 
 module body(width, diameter) {
@@ -79,5 +122,5 @@ module multiple_boxes() {
 }
 }
 
-//multiple_boxes();
+multiple_boxes();
 tower(50,200);
