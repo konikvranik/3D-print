@@ -95,7 +95,5 @@ c1 = .5;
 s = .2;
 
 //rack([4,3],w,h,d,c,c1);
-
-//translate([c+s,c+s,c+s]) box(w-2*c-2*s,d-2*c-2*s,h-2*c-2*s,c,[1,10,h/3-2*c],6);
-
-bottom((w)*4,d,c);
+translate([c+s,c+s,c+s]) box(w-2*c-2*s,d-2*c-2*s,h-2*c-2*s,c,[1,10,h/3-2*c],6);
+//bottom((w)*4,d,c);
