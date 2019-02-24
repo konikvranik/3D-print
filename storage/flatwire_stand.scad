@@ -74,6 +74,6 @@ module shelve() {
     }
 }
 
-//stand();
+stand();
 
 shelve();
