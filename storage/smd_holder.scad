@@ -4,9 +4,9 @@
  * Inside component there is extra space added to WIDTH_OF_STRIP to allow free movement of strip.
  */
 boxes=[
-    ["2K2",8,6,50,5],
-    ["10K",8,6,50,5],
-    ["200K",8,6,50,5],
+    ["220",8,6,50,5],
+    ["1K",8,6,50,5],
+    ["3K3",8,6,50,5],
     ["49K9",8,6,50,5],
     ["100K",8,6,50,5],
     ["diode",8,6,50,5],
