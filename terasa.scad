@@ -75,10 +75,10 @@ module terasa() {
             }
         }
     }
+    
     podlaha();
-    zabradli();
-    strecha();
-    translate([1500,300,75+27]) man();
+    //zabradli();
+    //strecha();
 
 }
 
@@ -92,27 +92,39 @@ module teren() {
 
 
 //500 3000
-    //2300 
-    translate([0,0,-1100]) {
-        translate([-300,0,0]) cube([300,5200,5000]);
-        translate([-10,1400,00])cube([7500,3800,1100]);
-        difference() {
-            translate([0,0,0])cube([7500,1400,1100]);
-            translate([-1,0,0]) rotate([38,0,0])cube([7502,3500,7000]);
+    //2300
+   
+   difference() { 
+       union() {
+            translate([0,0,-1100]) {
+                translate([-300,0,0]) cube([300,5200,5000]);
+                translate([-10,1400,00])cube([7500,3800,1100]);
+                difference() {
+                    translate([0,0,0])cube([7500,1400,1100]);
+                    translate([-1,0,0]) rotate([38,0,0])cube([7502,3500,7000]);
+                }
+                translate([0,1400+3500,0]) difference() {
+                    cube([4700,300,5000]);
+                    translate([500,-1,1100+1200]) cube([3000,302,2300]);
+                }
+            }
+            translate([1500,1400+3500-1700,0]) {
+                difference() {
+                    cube([2700-1500, 1700, 1200]);
+                    translate([-1,0,0]) rotate([40,0,0]) cube([2700-1500+2, 3700, 1200]);
+                }
+            }
         }
-        translate([0,1400+3500,0]) difference() {
-            cube([4700,300,5000]);
-            translate([500,-1,1100+1200]) cube([3000,302,2300]);
-        }
-    }
-    translate([1500,1400+3500-1700,0]) {
-        difference() {
-            cube([2700-1500, 1700, 1200]);
-            translate([-1,0,0]) rotate([40,0,0]) cube([2700-1500+2, 3700, 1200]);
+
+    translate([7500-3000-800,200,-75/4]) {
+            translate([45,0,0]) scale([2,1.01,2]) hranol45x75();
+            translate([1500,0,0]) scale([2,1.01,2]) hranol45x75();
+            translate([3000-2*45,0,0]) scale([2,1.01,2]) hranol45x75();
         }
     }
 }
 
-translate([7500-3000-800,200,0]) terasa();
+terasa();
+//translate([1500,300,75+27]) man();
 
-teren();
+//translate([-7500+3000+800,-200,0]) teren();
