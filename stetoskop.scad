@@ -5,7 +5,7 @@ $fn=64;
 use <threads.scad>;
 
 module usatko() {
-    d_in = 5;
+    d_in = 5.5;
     d_out = 11.3;
     h_in = 11.5;
     h_out = 14.3;
@@ -26,7 +26,7 @@ module usatko() {
 }
 
 module stetoskop() {
-    dia_d=43.8;
+    dia_d=44.3;
     dia_h=4;
     difference() {
         cylinder(d=dia_d+2,h=dia_h+.2);
