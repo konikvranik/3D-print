@@ -38,14 +38,14 @@ mirror([0,1,0]) half();
 module kolik() {
 difference() {
 body();
-translate([.5,0,0]) zuby();
+translate([.6,0,0]) zuby();
 }
 }
 
 difference() {
     scale([1.3,1.5,1]) kolik();
     
-    translate([40,31,20]) rotate([90,0,0])
+    translate([40,29,20]) rotate([90,0,0])
    { 
        translate([0,0,9]) cylinder(d=12, h=6);
        translate([0,0,3])  cylinder(d=5, h=6);
@@ -53,7 +53,10 @@ difference() {
        translate([-10,-2.5,3]) cube([10,5,8]);
        translate([-12,-6,9]) cube([12,12,6]);
        
-       translate([140,0,-10]) rotate([0,12,0]) cylinder(d=5,h=20);
+       translate([140,0,-10]) rotate([0,12,0]) {
+           cylinder(d=5,h=20);
+           translate([0,0,12]) cylinder(d=12,h=20);
+       }
    }
     
 }
