@@ -1,2 +1,6 @@
 *.gcode
 *.stl
+/venv/
+*.obj
+*.amf
+*.brep
