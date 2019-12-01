@@ -104,19 +104,19 @@ show_object(result.cut(connector_solid))
 ##############################################################
 bb = result.findSolid().BoundingBox()
 
-obal = x__workplane.box(290, 30, 30, combine=False, centered=(False, True, True))
+obal = x__workplane.box(330, 30, 30, combine=False, centered=(False, True, True))
 bottom = obal.faces("<Z").workplane()
-for y in range(225, 1000, 450):
+for y in range(225, 1400, 450):
     for x in range(0, 4900, 450):
         pass
-        bottom.moveTo(x / 100 - 140, y / 100).hole(1.5, 15)
-        bottom.moveTo(x / 100 - 140, -y / 100).hole(1.5, 15)
+        bottom.moveTo(x / 100 - 160, y / 100).hole(2, 15)
+        bottom.moveTo(x / 100 - 160, -y / 100).hole(2, 15)
 
-obal.edges().fillet(.7)
+obal.edges().fillet(1)
 
-obal.faces("<X").workplane().move(4, 7.8).rect(15, 5).cutBlind(-280)  # hole(15,depth=290)
-dira = x__workplane.box(bb.xlen, bb.ylen + .7, bb.zlen + 1.5, combine=False, centered=(False, True, True)) \
-    .faces(">X").box(10, bb.ylen-1, bb.zlen + 1.5, centered=(False, True, True))
+obal.faces("<X").workplane().move(4, 7.8).rect(15, 5).cutBlind(-320)  # hole(15,depth=290)
+dira = x__workplane.box(bb.xlen, bb.ylen, bb.zlen + .7, combine=False, centered=(False, True, True)) \
+    .faces(">X").box(10, bb.ylen - 1, bb.zlen + .7, centered=(False, True, True))
 
 obal = obal.cut(dira)
 
