@@ -21,8 +21,8 @@ module ring2() {
 	difference() {
 		union() {
 			cylinder(d=outer2, h=h2, center=true);
-			translate([-2.5, 0, 0]) cylinder(d=outer2, h=2, center=true);
-			translate([2.5, 0, 0]) cylinder(d=outer2, h=2, center=true);
+			translate([-2.5, 0, 0]) cylinder(d=outer2, h=4.5, center=true);
+			translate([2.5, 0, 0]) cylinder(d=outer2, h=4.5, center=true);
 			cube([outer2+2, 8, h2], center=true);
 		}
 		cylinder(d=inner, h=h2+3, center=true);
