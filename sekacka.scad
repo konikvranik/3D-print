@@ -1,7 +1,7 @@
 d1=22.5;
 d2=48;
-d3=25.2;
-h=11.73;
+d3=26;
+h=13;
 h1=2.67;
 
 di1=10.2;
@@ -26,7 +26,8 @@ difference() {
     translate([0,0,-1]) {
         cylinder(d=di1, h=h+2);
         for (a = [0:30:360]) {
-            rotate([0,0,a]) translate([di1/2,0,0]) cylinder(d=di2-di1,h=h+2);
+            rotate([0,0,a])  //translate([di1/2,0,0]) cylinder(d=di2-di1,h=h+2);
+                cube([di2,1.8,3*h+2], center=true);
         }
     }
 }
