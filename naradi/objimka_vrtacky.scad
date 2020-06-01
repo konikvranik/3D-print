@@ -1,5 +1,5 @@
 outer=42.3;
-outer2=38;
+outer2=42.3;
 inner=35.8;
 h=21;
 h2=16.3;
@@ -30,6 +30,6 @@ module ring2() {
 	}
 }
 
-ring1();
+//ring1();
 
 translate([2*outer, 0, 0]) ring2();
