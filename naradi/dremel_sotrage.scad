@@ -4,7 +4,7 @@ y=100;
 drill_hole=4;
 saw_thick=2;
 $fa=.01;
-//$fs=.2;
+$fs=.2;
 
 module base(x=200, y=100, h=70, t=20) {
 	difference() {
