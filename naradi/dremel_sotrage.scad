@@ -55,7 +55,7 @@ module plate1() {
 	difference() {
 		union() {
 			base(x, y);
-			peg_array([d/2, x-d/2], [d+5:10:x/2-d-5], 5, h-15);
+			peg_array([d/2, x-d/2], [d+5:10:x/2-d-5], 5, h);
 		}
 		translate([0, 0, 5]) peg_array([145:6:x-d], [d:6:y-d], drill_hole, 20);
 		translate([0, 0, 5]) peg_array([109:6:145], [64:6:y-d], drill_hole, 20);
@@ -66,6 +66,8 @@ module plate1() {
 		}
 		for (i=[d:12:48])
 		translate([i, d/2, 5]) cube([11, 88, 20]);
+		translate([87, d/2, 5]) cylinder(d=5.5, h=20);
+		translate([87+28, d/2, 5]) cylinder(d=5.5, h=20);
 	}
 }
 
@@ -127,7 +129,7 @@ module plate2() {
 					}
 					translate([0, 0, 0]) cube([34, y, 30]);
 
-					peg_array([x-d/2], [d+5:10:x/2-d-5], 5, h-15);
+					peg_array([x-d/2], [d+5:10:x/2-d-5], 5, h);
 				}
 				translate([33, 0, 5]) peg_array([d:6:x/2-d], [d:6:y-d], drill_hole, 20);
 				for (s=saws) {
