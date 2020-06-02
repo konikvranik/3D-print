@@ -3,8 +3,8 @@ x=200;
 y=100;
 drill_hole=4;
 saw_thick=2;
-$fa=.01;
-$fs=.2;
+$fa=10;
+$fs=.8;
 
 module base(x=200, y=100, h=70, t=20) {
 	difference() {
@@ -51,8 +51,12 @@ module cyl_hole(d, w=saw_thick) {
 }
 
 module plate1() {
+	h=70;
 	difference() {
-		base(x, y);
+		union() {
+			base(x, y);
+			peg_array([d/2, x-d/2], [d+5:10:x/2-d-5], 5, h-15);
+		}
 		translate([0, 0, 5]) peg_array([145:6:x-d], [d:6:y-d], drill_hole, 20);
 		translate([0, 0, 5]) peg_array([109:6:145], [64:6:y-d], drill_hole, 20);
 		translate([0, 0, 5]) peg_array([61:6:109], [88:6:y-d], drill_hole, 20);
@@ -123,7 +127,7 @@ module plate2() {
 					}
 					translate([0, 0, 0]) cube([34, y, 30]);
 
-					peg_array([x-d/2], [d+5:10:x/2-d-5], 5, 70);
+					peg_array([x-d/2], [d+5:10:x/2-d-5], 5, h-15);
 				}
 				translate([33, 0, 5]) peg_array([d:6:x/2-d], [d:6:y-d], drill_hole, 20);
 				for (s=saws) {
