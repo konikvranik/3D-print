@@ -22,10 +22,12 @@ module base(x=200, y=100, h=70, t=20) {
 				for (j=[d/2, y-d/2]) {
 					translate([i, j, 0]) {
 						cylinder(d=d, h=h);
-						translate([0, 0, h]) cylinder(d=d*3/4-.5, h=t/2);
+						translate([0, 0, h]) cylinder(d=d*3/4-.5, h=t/2-d*3/4/2);
+						translate([0, 0, h+t/2-d*3/4/2]) sphere(d=d*3/4-.5);
 					}
 				}
-			}}
+			}
+		}
 		for (i=[d/2, x-d/2]) {
 			for (j=[d/2, y-d/2]) {
 				translate([i, j, 0]) {
