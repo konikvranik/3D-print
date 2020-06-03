@@ -20,11 +20,11 @@ difference() {
                 difference() {
                     union() {
                         cylinder(d=d2, h=5);
-                        cylinder(d=55, h=4);
+                        cylinder(d=56, h=4);
                     }
                     translate([0,0,4]) cylinder(d1=25,d2=35,h=1.1);
         for (a = [0:40:360]) {
-            rotate([0,0,a]) translate([d2/2+2.5,0,0]) cylinder(d=5,h=20);
+            rotate([0,0,a]) translate([d2/2+1.5,0,0]) cylinder(d=3,h=20);
         }
                 }
             }
