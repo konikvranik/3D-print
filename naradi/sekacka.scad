@@ -8,6 +8,7 @@ di1=10.2;
 di2=12.05;
 
 $fs=.2;
+$fa=1;
 
 difference() {
     union() {

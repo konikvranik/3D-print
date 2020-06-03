@@ -1,7 +1,7 @@
 d=10;
 x=200;
 y=100;
-drill_hole=4;
+drill_hole=3.7;
 saw_thick=2;
 $fa=10;
 $fs=.8;
