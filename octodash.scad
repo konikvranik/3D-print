@@ -4,6 +4,8 @@ rpi = [65.2, 56.2, 20];
 thick = 1.5;
 border=7;
 drill = 4;
+$fn=32;
+
 difference() {
     union() {
         cube([display[0], display[1] + 45, display[2] + rpi[2]] + [2 * thick, 2 * thick, 2 * thick]);
