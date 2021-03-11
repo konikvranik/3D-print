@@ -1,6 +1,6 @@
 display = [85.5, 55.5, 7]+[1,1,1];
 lcd = [74.5, 50.5, 5];
-rpi = [65.2, 56.2, 20]+[1,1,1];
+rpi = [70, 59, 20]+[3,1,1];
 thick = 1.5;
 border=7;
 drill = 4;
@@ -25,4 +25,3 @@ difference() {
         cylinder(d = drill, h = 200);
     translate([(display[0] + 30 + 2 * thick) / 2 - 15, - 1, - border]) rotate([- 90, 0, 0]) cylinder(d = drill, h = 200);
 }
-
