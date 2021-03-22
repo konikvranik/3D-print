@@ -3,7 +3,7 @@ height = 195;
 x = 240;
 y = 200;
 angle = 5;
-$fn=64;
+//$fn=64;
 
 module box() {
     translate([radius, radius, radius]) corner();
@@ -62,7 +62,7 @@ module main() {
     difference() {
         box();
         inner();
-        translate([radius, radius, radius]) rotate([0, 45, 45]) cylinder(r = radius, h = 100, center = true);
+        translate([radius, radius, 0])  cylinder(r = radius-3, h = radius);
     }
 }
 
