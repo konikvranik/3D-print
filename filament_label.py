@@ -26,8 +26,6 @@ for text in texts:
                                                                                 clip_length + tube_diameter).cutThruAll()
     object = object.workplane().move(0, cylinder_outer_diameter + clip_length / 2+.7).rect(tube_diameter,
                                                                                         clip_length + tube_diameter).cutThruAll()
-    # object = object.workplane().move(tube_diameter / 2, cylinder_outer_diameter - 4).cylinder(clip_length, 1 / 2)
-    # object = object.workplane().move(-tube_diameter / 2, cylinder_outer_diameter - 4).cylinder(clip_length, 1 / 2)
     object = object.workplane().move(tube_diameter / 2, cylinder_outer_diameter - 1.1).cylinder(clip_length, 1 / 2)
     object = object.workplane().move(-tube_diameter / 2, cylinder_outer_diameter - 1.1).cylinder(clip_length, 1 / 2)
 
