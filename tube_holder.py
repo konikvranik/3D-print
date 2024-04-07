@@ -3,7 +3,7 @@ import cadquery as cq
 
 class FilamentGuide:
 
-    def __init__(self, outer_diameter: float = 4 + .1, inner_diameter: float = 2.5 + .8, depth: float = 4,
+    def __init__(self, outer_diameter: float = 4, inner_diameter: float = 2.5 + .4, depth: float = 4,
                  height: float = 10, segment_width: float = 13, padding: float = 4, padding_x: float = None,
                  tip_length: float = 10, tip_height: float = 5, screw_inner_diameter=3.8, screw_outer_diameter=8,
                  screw_head=3.3):
