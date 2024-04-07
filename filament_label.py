@@ -2,18 +2,29 @@ import cadquery as cq
 
 texts = ["ABS", "PET", "PLA", "PETG", "rPET"]
 
-font_size = 8
+font_size = 7
+tube_diameter = 4.2
+cylinder_outer_diameter = 7.2
+clip_length = 5
 
 for text in texts:
     wp = cq.Workplane("XY")
 
     t = wp.workplane(offset=-1.8).text(text, font_size, .4)
-    object = wp.box(t.val().BoundingBox().xlen + font_size * .6, t.val().BoundingBox().ylen + font_size * .6, 3)
-    object = object.copyWorkplane(cq.Workplane("right", origin=(0, 0, 9 / 2 - 1.5))).cylinder(10, 9 / 2,
-                                                                                              centered=[True, True,
-                                                                                                        True],
-                                                                                              angle=195).faces(
-        ">X").workplane().circle(4.2 / 2).cutThruAll()
+    box_height = t.val().BoundingBox().xlen + font_size * .6
+    box_width = t.val().BoundingBox().ylen + font_size * .6
+
+    object = wp.box(box_height, box_width, 3)
+    object = object.faces("<X").workplane(offset=-box_height / 2).cylinder(clip_length, cylinder_outer_diameter / 2, centered=(True, False, True))
+    object = object.faces("<X").workplane(offset=-box_height / 2).box(cylinder_outer_diameter, cylinder_outer_diameter / 2,
+                                                                      clip_length, centered=(True, False, True))
+    object = object.faces("right").workplane().move(0, cylinder_outer_diameter / 2).circle(tube_diameter / 2).cutThruAll().workplane().move(0,
+                                                                                                                                            cylinder_outer_diameter / 2 + clip_length / 2).rect(
+        tube_diameter, clip_length).cutThruAll().workplane()
+    object = object.workplane().move(tube_diameter / 2, cylinder_outer_diameter - 4).cylinder(clip_length, 1 / 2)
+    object = object.workplane().move(tube_diameter / 2, cylinder_outer_diameter - 1).cylinder(clip_length, 1 / 2)
+    object = object.workplane().move(-tube_diameter / 2, cylinder_outer_diameter - 4).cylinder(clip_length, 1 / 2)
+    object = object.workplane().move(-tube_diameter / 2, cylinder_outer_diameter - 1).cylinder(clip_length, 1 / 2)
 
     t = t.mirror("YZ")
 
