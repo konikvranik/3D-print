@@ -3,8 +3,8 @@ import cadquery as cq
 
 class FilamentGuide:
 
-    def __init__(self, outer_diameter: float = 4, inner_diameter: float = 2.5 + .4, depth: float = 4,
-                 height: float = 10, segment_width: float = 13, padding: float = 4, padding_x: float = None,
+    def __init__(self, outer_diameter: float = 4, inner_diameter: float = 2.5 + .4,
+                 height: float = 18, segment_width: float = 13, padding: float = 4, padding_x: float = None,
                  tip_length: float = 10, tip_height: float = 5, screw_inner_diameter=3.8, screw_outer_diameter=8,
                  screw_head=3.3):
         self.screw_head = screw_head
@@ -12,7 +12,7 @@ class FilamentGuide:
         self.screw_inner_radius = screw_inner_diameter / 2
         self.tip_height = tip_height
         self.tip_length = tip_length
-        self.depth = depth
+        self.depth = height / 2 - 3
         self.segment_width: float = segment_width
         self.padding: float = padding
         self.padding_x: float = padding_x
@@ -96,7 +96,7 @@ class FilamentGuide:
             self.inner_radius).cutThruAll().last()
 
         self.texts.append(self.main.workplane(
-            origin=cq.Vector(placement - offset, 0, 0)).text(self.segments[i], self.height * .77, -.2,
+            origin=cq.Vector(placement - offset, 0, 0)).text(self.segments[i], self.height * .5, -.2,
                                                              combine=False).val())
 
 
