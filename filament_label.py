@@ -15,16 +15,21 @@ for text in texts:
     box_width = t.val().BoundingBox().ylen + font_size * .6
 
     object = wp.box(box_height, box_width, 3)
-    object = object.faces("<X").workplane(offset=-box_height / 2).cylinder(clip_length, cylinder_outer_diameter / 2, centered=(True, False, True))
-    object = object.faces("<X").workplane(offset=-box_height / 2).box(cylinder_outer_diameter, cylinder_outer_diameter / 2,
+    object = object.faces("<X").workplane(offset=-box_height / 2).cylinder(clip_length, cylinder_outer_diameter / 2,
+                                                                           centered=(True, False, True))
+    object = object.faces("<X").workplane(offset=-box_height / 2).box(cylinder_outer_diameter,
+                                                                      cylinder_outer_diameter / 2,
                                                                       clip_length, centered=(True, False, True))
-    object = object.faces("right").workplane().move(0, cylinder_outer_diameter / 2).circle(tube_diameter / 2).cutThruAll().workplane().move(0,
-                                                                                                                                            cylinder_outer_diameter / 2 + clip_length / 2).rect(
-        tube_diameter, clip_length).cutThruAll().workplane()
-    object = object.workplane().move(tube_diameter / 2, cylinder_outer_diameter - 4).cylinder(clip_length, 1 / 2)
-    object = object.workplane().move(tube_diameter / 2, cylinder_outer_diameter - 1).cylinder(clip_length, 1 / 2)
-    object = object.workplane().move(-tube_diameter / 2, cylinder_outer_diameter - 4).cylinder(clip_length, 1 / 2)
-    object = object.workplane().move(-tube_diameter / 2, cylinder_outer_diameter - 1).cylinder(clip_length, 1 / 2)
+    object = object.faces("right").workplane().move(0, cylinder_outer_diameter / 2 + 1).circle(
+        tube_diameter / 2).cutThruAll().workplane()
+    object = object.move(0, cylinder_outer_diameter / 2 + clip_length / 2).rect(tube_diameter - 1,
+                                                                                clip_length + tube_diameter).cutThruAll()
+    object = object.workplane().move(0, cylinder_outer_diameter + clip_length / 2+.7).rect(tube_diameter,
+                                                                                        clip_length + tube_diameter).cutThruAll()
+    # object = object.workplane().move(tube_diameter / 2, cylinder_outer_diameter - 4).cylinder(clip_length, 1 / 2)
+    # object = object.workplane().move(-tube_diameter / 2, cylinder_outer_diameter - 4).cylinder(clip_length, 1 / 2)
+    object = object.workplane().move(tube_diameter / 2, cylinder_outer_diameter - 1.1).cylinder(clip_length, 1 / 2)
+    object = object.workplane().move(-tube_diameter / 2, cylinder_outer_diameter - 1.1).cylinder(clip_length, 1 / 2)
 
     t = t.mirror("YZ")
 
