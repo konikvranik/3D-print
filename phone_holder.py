@@ -3,7 +3,7 @@ import numpy as np
 
 charging_base = np.array([75, 75, 12])
 phone = np.array([72, 153, 8.6]) + np.array([1, 0, 1])
-wall = np.array([3, 5, 3])
+wall = np.array([5, 5, 3])
 grab_side = 2
 grab_bottom = 2
 grab_height = 40
