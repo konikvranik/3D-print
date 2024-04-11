@@ -5,8 +5,8 @@ grab=5;
 
 difference() {
 	translate([-wall, -wall, -wall-charging_base[2]]) {
-		cube(phone+[2*wall, wall-20, 2*wall]+[0, 0, charging_base[2]]);
 		translate([wall+10, 0, 0]) cube(phone+[-20, 2*wall+phone[1]*3/8, 2*wall]+[0, 0, charging_base[2]]);
+		cube(phone+[2*wall, wall-20, 2*wall]+[0, 0, charging_base[2]]);
 	}
 	cube(phone);
 	translate([-2*wall, phone[1]/4], 0) cube(phone+[4*wall, phone[0]/4, 4*wall]);
