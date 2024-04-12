@@ -54,7 +54,7 @@ base = base.faces(">Y").workplane().tag("top_of_base")
 base = base.move(0, -outer_box.item(2) + top_height / 2).rect(top_width, top_height).extrude(top_length)
 base = base.workplaneFromTagged("top_of_base").move(0, -outer_box.item(2) + top_height / 2).rect(outer_box.item(0),
                                                                                                  top_height).extrude(
-    wall.item(1) * 5)
+    wall.item(1) * 2)
 
 # tunnel
 base = base.faces(">Y").rect(tunnel_width, top_height - 2 * wall.item(2)).cutBlind(-top_length - wall.item(1))
