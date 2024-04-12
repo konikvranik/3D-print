@@ -2,7 +2,7 @@ import cadquery as cq
 import numpy as np
 
 charging_base = np.array([75, 75, 12])
-phone = np.array([72, 153, 8.6]) + np.array([1, 0, 1])
+phone = np.array([72, 153, 8.6]) + np.array([2, 0, 0])
 wall = np.array([5, 5, 3])
 grab_side = 2
 grab_bottom = 2
@@ -57,7 +57,7 @@ base = base.workplaneFromTagged("top_of_base").move(0, -outer_box.item(2) + top_
     wall.item(1) * 5)
 
 # tunnel
-base = base.faces(">Y").rect(tunnel_width, top_height - 2 * wall.item(1)).cutBlind(-top_length - wall.item(1))
+base = base.faces(">Y").rect(tunnel_width, top_height - 2 * wall.item(2)).cutBlind(-top_length - wall.item(1))
 # top hole
 base = base.faces("<Z").workplane().move(0, -total_height / 2).rect(tunnel_width, top_hole * 2).cutBlind(-5)
 
@@ -65,8 +65,8 @@ base = base.faces("<Z").workplane().move(0, -total_height / 2).rect(tunnel_width
 base = base.faces(">Y").workplane(offset=top_thickness / 2).move(0, top_depth / 2).box(outer_box.item(0),
                                                                                        top_depth, top_thickness)
 
-hole_size = top_height - wall.item(1)
-base = base.faces(">Y").workplane().move(0, hole_size / 2).rect(tunnel_width, hole_size).cutBlind(-top_thickness)
+hole_size = top_height - wall.item(2)
+base = base.faces(">Y").workplane().move(0, hole_size / 2).rect(tunnel_width, hole_size).cutBlind(-top_thickness-wall.item(1))
 base = base.edges("<<Y[1]").fillet(2).faces("<<Y[2]").edges().fillet(2)
 
 base = base.faces(">Y").workplane().move(outer_box.item(0) / 2 - 10, top_depth / 2).circle(screw_diameter / 2).cutBlind(
