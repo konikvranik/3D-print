@@ -67,10 +67,10 @@ class FilamentGuide:
 
     def _add_tip(self, direction=1):
         offset = direction * (self._calculate_length() / 2 + self.tip_length / 2)
-        self.body = self.body.faces(">Y").workplane(offset=-self.tip_height / 2).move(-offset, self.height / 2).box(
-            self.tip_length, self.height, self.tip_height)
+        self.body = self.body.faces(">Y").workplane(offset=-self._calculate_width() / 2).move(-offset, self.height / 2).box(self.tip_length, self.height, self._calculate_width())
         self.body = self.body.faces(">Y")
         self.body = self.body.workplane().move(-offset, self.height / 2).circle(self.screw_inner_radius).cutThruAll()
+        self.body = self.body.faces("<Y").workplane().move(offset, self.height / 2).circle(4).cutBlind(-(self._calculate_width()-(self.tip_height+self.screw_head/2-.1)))
         self.body = self.body.workplane().cut(
             cq.Solid.makeCone(self.screw_inner_radius, self.screw_outer_radius, self.screw_head).translate(
                 [offset, 0, -self._calculate_width() + self.tip_height + self.screw_head]).rotate([0, 0, 0], [1, 0, 0],
