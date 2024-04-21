@@ -3,11 +3,14 @@ import cadquery as cq
 texts = ["ABS", "PET", "PLA", "PETG", "rPET"]
 
 font_size = 7
-tube_diameter = 3.9
+tube_diameter = 3.8
 cylinder_outer_diameter = 7.2
 clip_length = 5
 box_height = 3
 
+if 'show_object' not in globals():
+    def show_object(*args, **kwargs):
+        pass
 
 def clip_body(object):
     object = object.faces("<X").workplane(offset=-box_length / 2).cylinder(clip_length, cylinder_outer_diameter / 2,
@@ -62,9 +65,6 @@ for text in texts:
     assembly.solve()
     assembly.save("%s.step" % text)
 
-    if 'show_object' not in globals():
-        def show_object(*args, **kwargs):
-            pass
 
     show_object(object)
 
