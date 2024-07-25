@@ -9,7 +9,7 @@ wp = wp.cylinder(9.2, 35 / 2)
 wp = wp.faces("<Z").workplane(invert=True).rect(22, 40).cutBlind(4.6)
 
 wp = wp.faces(">Z").workplane(invert=True).moveTo(11, 5).rect(2, 2).cutBlind(7)
-wp = wp.faces(">Z").workplane(invert=True).moveTo(-14, 5).rect(5, 2).cutBlind(7)
+wp = wp.faces(">Z").workplane(invert=True).moveTo(-14, 5).rect(8, 2).cutBlind(7)
 wp = wp.faces(">Z").workplane(invert=False).cylinder(2.2, 13.3 / 2, centered=[True, True, False])
 wp = wp.faces(">Z").workplane(invert=False).cylinder(2.2, 11.5 / 2, centered=[True, True, False])
 wp = wp.faces(">Z").workplane(invert=False).cylinder(3.6, 13.3 / 2, centered=[True, True, False])
