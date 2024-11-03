@@ -1,0 +1,11 @@
+= Sklíčidla
+:pdf-page-layout: portrait
+
+[cols="^,^,^,^"]
+|===
+||Roztažení|Stažení kulatiny|Stažení hranolu
+|Malé|`26 - 46 mm`|`13 - 33 mm`|`11 - 31 mm`
+|Střední|`38 - 58 mm`|`28 - 47 mm`|`16 - 37 mm`
+|Velké|`52 - 72 mm`|`42 - 61 mm`|`30 - 51 mm`
+|Super velké|`53 - 316 mm`|`55 - 272 mm`|`51 - 250 mm`
+|===
