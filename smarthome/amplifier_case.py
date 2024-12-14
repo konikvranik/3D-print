@@ -5,7 +5,7 @@ import cadquery as cq
 os.environ["FONTCONFIG_FILE"] = "/etc/fonts/fonts.conf"
 os.environ["FONTCONFIG_PATH"] = "/etc/fonts/"
 
-dist = 26
+dist = 24
 diameter = 8
 width = 60
 height = 15
@@ -17,7 +17,11 @@ object = object.edges().fillet(3)
 object = object.faces(">Y").moveTo(0, 0).circle(
     diameter / 2).cutThruAll().moveTo(-dist, 0).circle(diameter / 2).cutThruAll().moveTo(dist, 0).circle(
     diameter / 2).cutThruAll()
-object = object.faces(">Z").workplane().moveTo(0, 0).rect(width + 10, height + 10).cutBlind(-depth - 7.5)
+object = object.faces(">Z").workplane().moveTo(0, 0).rect(width + 10, height + 10).cutBlind(-depth - 8)
+
+for i in range(0, 30, 5):
+    for j in range(-10, -35, -5):
+        object = object.faces("<Y").workplane().moveTo(i, j).circle(2).cutBlind(-5)
 
 volume = cq.Workplane("XZ").text("- V +", 3, .4)
 treble = cq.Workplane("XZ").text("- T +", 3, .4)
