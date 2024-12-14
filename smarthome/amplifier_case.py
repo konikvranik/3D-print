@@ -5,8 +5,8 @@ import cadquery as cq
 os.environ["FONTCONFIG_FILE"] = "/etc/fonts/fonts.conf"
 os.environ["FONTCONFIG_PATH"] = "/etc/fonts/"
 
-dist = 24
-diameter = 8
+dist = 25
+diameter = 9
 width = 60
 height = 15
 depth = 35
@@ -25,9 +25,9 @@ for i in range(0, 30, 5):
     for j in range(-10, -35, -5):
         object = object.faces("<Y").workplane().moveTo(i, j).circle(2).cutBlind(-5)
 
-volume = cq.Workplane("XZ").text("- V +", 3, text_offset)
-treble = cq.Workplane("XZ").text("- T +", 3, text_offset)
-bass = cq.Workplane("XZ").text("- B +", 3, text_offset)
+volume = cq.Workplane("XZ").text("- V +", 5, text_offset, font="Consolas", kind="bold")
+treble = cq.Workplane("XZ").text("- T +", 5, text_offset, font="Consolas", kind="bold")
+bass = cq.Workplane("XZ").text("- B +", 5, text_offset, font="Consolas", kind="bold")
 
 assembly = cq.Assembly()
 assembly.add(object, name="body")
