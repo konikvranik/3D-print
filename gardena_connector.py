@@ -2,7 +2,7 @@ import cadquery as cq
 from ezdxf.render.forms import cylinder
 
 
-def create_gardena_connector(params=None):
+def create_gardena_connector(wp=cq.Workplane("XY")):
     """
     Vytvoří Gardena rychlospojku s přesnými parametry.
 
@@ -16,8 +16,6 @@ def create_gardena_connector(params=None):
     cadquery.Workplane
         Gardena konektor jako CadQuery objekt
     """
-
-    wp = cq.Workplane("XY")
 
     wp = wp.cylinder(2, 30 / 2, centered=[True, True, False])
     # Základní tělo konektoru
@@ -33,10 +31,8 @@ def create_gardena_connector(params=None):
     wp = wp.faces(">Z").workplane().cylinder(2.5, 15.85 / 2, centered=[True, True, False])
     wp = wp.faces(">Z").workplane().cylinder(3, 11.3 / 2, centered=[True, True, False])
 
-
     # Vytvoření víčka
     wp = wp.faces(">Z").workplane().cylinder(2.6, 15.85 / 2, centered=[True, True, False])
-
 
     # Získání hran pro zaoblení
     wp = wp.faces(">Z[-2]").edges().filter(lambda e: e.radius() < 7).fillet(1.4999)
