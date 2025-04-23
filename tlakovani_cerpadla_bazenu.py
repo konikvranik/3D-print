@@ -2,7 +2,7 @@ import cadquery as cq
 import gardena_connector as gc
 
 
-def create_cone(base_diameter=40, top_diameter=60, height=150, inner_diameter=35):
+def create_cone(base_diameter=40, top_diameter=60, height=150, inner_diameter=30):
     """
     Vytvoří kónický přechod s vnitřním otvorem.
     
