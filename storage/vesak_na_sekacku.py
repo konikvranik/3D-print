@@ -1,7 +1,4 @@
 import cadquery as cq
-from casadi import offset
-from ezdxf.zoom import center
-
 from common import render
 
 wp = cq.Workplane("XY")
