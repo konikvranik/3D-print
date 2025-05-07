@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 
 
-TTGO_WIDTH = 25.09
-TTGO_HEIGHT = 51.49
+TTGO_WIDTH = 25.7
+TTGO_HEIGHT = 51.6
 TTGO_HEIGHT_WITH_USB = 53
 TTGO_DEPTH_WITH_DISPLAY = 3
 TTGO_DEPTH_WITH_RESET = 3
 TTGO_DEPTH_WITH_USB = 4.3
-USB_WIDTH = 9
-USB_HEIGHT = 7.3
-USB_DEPTH = 2.8
+USB_WIDTH = 9.5
+USB_HEIGHT = 7.4
+USB_DEPTH = 3
 DISPLAY_HEIGHT = 26
 DISPLAY_WIDTH = 16.5
-DISPLAY_OFFSET = 6.7
+DISPLAY_OFFSET = 8
 BUTTON_WIDTH = 3.3
 BUTTON_HEIGHT = 4.1
 BUTTON_CENTER_OFFSET_X = 4.5
@@ -24,9 +24,13 @@ BOARD_DEPTH = 1.25
 
 WALL_THICKNESS = 1
 
-CASE_HEIGHT = TTGO_HEIGHT + 10 + WALL_THICKNESS * 2
-CASE_WIDTH = TTGO_WIDTH + 20 + WALL_THICKNESS * 2
-CASE_DEPTH = TTGO_DEPTH_WITH_USB + 2 * WALL_THICKNESS
+CASE_HEIGHT = TTGO_HEIGHT + 10 + 50
+CASE_WIDTH = max(TTGO_WIDTH + 10, 40)
+CASE_DEPTH = 30
+
+# CASE_HEIGHT = TTGO_HEIGHT + 10
+# CASE_WIDTH = TTGO_WIDTH + 10
+# CASE_DEPTH = TTGO_DEPTH_WITH_USB
 
 import cadquery as cq
 
@@ -54,18 +58,18 @@ def display_window():
 def usb_hole():
     global wp
     usb_offset = TTGO_HEIGHT_WITH_USB - TTGO_HEIGHT
-    wp = (wp.faces("<Y").workplane(offset=usb_offset)
+    wp = (wp.faces("<Y").workplane(offset=usb_offset - WALL_THICKNESS)
           .moveTo(0, WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB)
           .rect(USB_WIDTH - USB_DEPTH, USB_DEPTH, centered=[True, False])
           .cutBlind(-USB_HEIGHT)
 
-          .faces("<Y").workplane(offset=usb_offset)
+          .faces("<Y").workplane(offset=usb_offset - WALL_THICKNESS)
           .moveTo((USB_WIDTH - USB_DEPTH) / 2,
                   WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB + USB_DEPTH / 2)
           .circle(USB_DEPTH / 2)
           .cutBlind(-USB_HEIGHT)
 
-          .faces("<Y").workplane(offset=usb_offset)
+          .faces("<Y").workplane(offset=usb_offset - WALL_THICKNESS)
           .moveTo(-(USB_WIDTH - USB_DEPTH) / 2,
                   WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB + USB_DEPTH / 2)
           .circle(USB_DEPTH / 2)
@@ -109,8 +113,8 @@ def buttons():
 
           .faces("<Z")
           .workplane(invert=True)
-          .moveTo(-TTGO_WIDTH / 2 + BUTTON_CENTER_OFFSET_X, BUTTON_CENTER_OFFSET_Y+button_height/2)
-          .rect(3, extension,centered=[True, False])
+          .moveTo(-TTGO_WIDTH / 2 + BUTTON_CENTER_OFFSET_X, BUTTON_CENTER_OFFSET_Y + button_height / 2)
+          .rect(3, extension, centered=[True, False])
           .cutThruAll()
 
           .faces("<Z")
@@ -121,8 +125,8 @@ def buttons():
 
           .faces("<Z")
           .workplane(invert=True)
-          .moveTo(-TTGO_WIDTH / 2 + BUTTON_CENTER_OFFSET_X, BUTTON_CENTER_OFFSET_Y+button_height/2)
-          .rect(3-space, extension,centered=[True, False])
+          .moveTo(-TTGO_WIDTH / 2 + BUTTON_CENTER_OFFSET_X, BUTTON_CENTER_OFFSET_Y + button_height / 2)
+          .rect(3 - space, extension, centered=[True, False])
           .extrude(WALL_THICKNESS)
 
           )
@@ -134,10 +138,9 @@ def buttons():
 
           .faces("<Z")
           .workplane(invert=True)
-          .moveTo(TTGO_WIDTH / 2 - BUTTON_CENTER_OFFSET_X, BUTTON_CENTER_OFFSET_Y+button_height/2)
-          .rect(3, extension,centered=[True, False])
+          .moveTo(TTGO_WIDTH / 2 - BUTTON_CENTER_OFFSET_X, BUTTON_CENTER_OFFSET_Y + button_height / 2)
+          .rect(3, extension, centered=[True, False])
           .cutThruAll()
-
 
           .faces("<Z")
           .workplane(invert=True)
@@ -147,11 +150,20 @@ def buttons():
 
           .faces("<Z")
           .workplane(invert=True)
-          .moveTo(TTGO_WIDTH / 2 - BUTTON_CENTER_OFFSET_X, BUTTON_CENTER_OFFSET_Y+button_height/2)
-          .rect(3-space, extension,centered=[True, False])
+          .moveTo(TTGO_WIDTH / 2 - BUTTON_CENTER_OFFSET_X, BUTTON_CENTER_OFFSET_Y + button_height / 2)
+          .rect(3 - space, extension, centered=[True, False])
           .extrude(WALL_THICKNESS)
 
+          )
 
+
+def division():
+    global wp
+    wp = (wp
+          .faces("<Z[-2]")
+          .workplane()
+          .moveTo(0, TTGO_HEIGHT + 5)
+          .box(CASE_WIDTH, WALL_THICKNESS, max(CASE_DEPTH - 5, TTGO_DEPTH_WITH_DISPLAY), centered=[True, False, False])
           )
 
 
@@ -162,5 +174,6 @@ display_window()
 usb_hole()
 board_holder()
 buttons()
+division()
 
 render(wp, 'hydroponic_controller_ttgo_case.stl')
