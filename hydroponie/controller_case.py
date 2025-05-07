@@ -48,7 +48,7 @@ def display_window():
     wp = (wp.faces("<Z[1]").workplane()
           .move(0, TTGO_HEIGHT - DISPLAY_OFFSET - DISPLAY_HEIGHT)
           .rect(DISPLAY_WIDTH, DISPLAY_HEIGHT, centered=[True, False])
-          .cutBlind(-WALL_THICKNESS, taper=-78))
+          .cutBlind(-WALL_THICKNESS, taper=-70))
 
 
 def usb_hole():
@@ -94,9 +94,9 @@ def usb_hole():
 
 def board_holder():
     global wp
-    wp = (wp.faces("<Z[2]").workplane(invert=False)
-          .move(0, TTGO_HEIGHT - VOLNY_KONEC)
-          .box(TTGO_WIDTH + WALL_THICKNESS * 2, VOLNY_KONEC, TTGO_DEPTH_WITH_DISPLAY + WALL_THICKNESS,
+    wp = (wp.faces(">Y[1]").workplane(offset=TTGO_HEIGHT - VOLNY_KONEC)
+          # .move(0, TTGO_HEIGHT - VOLNY_KONEC)
+          .box(TTGO_WIDTH + WALL_THICKNESS * 2, TTGO_DEPTH_WITH_DISPLAY + WALL_THICKNESS, VOLNY_KONEC,
                centered=[True, False, False]))
     wp = (wp.faces("<Y[2]").workplane()
           .move(0, 0)
