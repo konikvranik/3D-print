@@ -9,6 +9,7 @@ TTGO_DEPTH_WITH_RESET = 3
 TTGO_DEPTH_WITH_USB = 4.3
 USB_WIDTH = 9
 USB_HEIGHT = 7.3
+USB_DEPTH = 2.8
 DISPLAY_HEIGHT = 26
 DISPLAY_WIDTH = 16.5
 DISPLAY_OFFSET = 6.7
@@ -42,11 +43,56 @@ def shell():
         -CASE_DEPTH + WALL_THICKNESS)
 
 
-shell()
+def display_window():
+    global wp
+    wp = (wp.faces("<Z").workplane(offset=-WALL_THICKNESS)
+          .move(0, -TTGO_HEIGHT_WITH_USB + DISPLAY_OFFSET)
+          .rect(DISPLAY_WIDTH, DISPLAY_HEIGHT, centered=[True, False])
+          .cutBlind(WALL_THICKNESS, taper=-78))
 
-wp = (wp.faces("<Z").workplane(offset=-WALL_THICKNESS)
-      .move(0, -TTGO_HEIGHT_WITH_USB + DISPLAY_OFFSET)
-      .rect(DISPLAY_WIDTH, DISPLAY_HEIGHT, centered=[True, False])
-      .cutBlind(WALL_THICKNESS, taper=-80))
+
+def usb_hole():
+    global wp
+    wp = (wp.faces(">Y").workplane()
+          .move(0, WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB)
+          .rect(USB_WIDTH - USB_DEPTH, USB_DEPTH, centered=[True, False])
+          .cutBlind(-USB_HEIGHT)
+
+          .faces(">Y").workplane()
+          .move((USB_WIDTH - USB_DEPTH) / 2, WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB + USB_DEPTH / 2)
+          .circle(USB_DEPTH / 2)
+          .cutBlind(-USB_HEIGHT)
+
+          .faces(">Y").workplane()
+          .move(-(USB_WIDTH - USB_DEPTH) / 2, WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB + USB_DEPTH / 2)
+          .circle(USB_DEPTH / 2)
+          .cutBlind(-USB_HEIGHT))
+
+    #
+    # wp = (wp.faces(">Y").workplane(offset=-WALL_THICKNESS)
+    #       .move(0, WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB)
+    #       .rect(USB_WIDTH - USB_DEPTH, USB_DEPTH, centered=[True, False])
+    #       .cutBlind(WALL_THICKNESS, taper=-30)
+    #       .workplane()
+    #       .move((USB_WIDTH - USB_HEIGHT) / 2, 0)
+    #       .circle(USB_DEPTH / 2)
+    #       .cutBlind(WALL_THICKNESS, taper=-30)
+    #       .workplane()
+    #       .move(-(USB_WIDTH - USB_HEIGHT), 0)
+    #       .circle(USB_DEPTH / 2)
+    #       .cutBlind(WALL_THICKNESS, taper=-30))
+
+    # skew on corner
+    # wp = (wp.faces(">Y").workplane(offset=-WALL_THICKNESS)
+    #   .move(0, WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB)
+    #   .rect(USB_WIDTH, USB_DEPTH, centered=[True, False])
+    #   .cutBlind(WALL_THICKNESS, taper=-30))
+
+
+## ============================
+
+shell()
+display_window()
+usb_hole()
 
 render(wp, 'hydroponic_controller_ttgo_case.stl')
