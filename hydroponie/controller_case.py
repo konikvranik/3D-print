@@ -20,12 +20,13 @@ BUTTON_CENTER_OFFSET_Y = 3.2
 RESET_CENTER_OFFSET_Y = 11
 RESET_HEIGHT = 4.5
 VOLNY_KONEC = 5.4
+BOARD_DEPTH = 1.25
 
 WALL_THICKNESS = 1
 
-CASE_HEIGHT = TTGO_HEIGHT_WITH_USB + WALL_THICKNESS * 2
+CASE_HEIGHT = TTGO_HEIGHT + WALL_THICKNESS * 2
 CASE_WIDTH = TTGO_WIDTH + WALL_THICKNESS * 2
-CASE_DEPTH = 30
+CASE_DEPTH = TTGO_DEPTH_WITH_USB + 2 * WALL_THICKNESS
 
 import cadquery as cq
 
@@ -37,10 +38,9 @@ wp = cq.Workplane("XY")
 def shell():
     global wp
     wp = wp.box(CASE_WIDTH, CASE_HEIGHT, CASE_DEPTH, centered=[True, False, False])
-    wp = wp.faces(">Z").workplane().move(0, WALL_THICKNESS).rect(CASE_WIDTH - WALL_THICKNESS * 2,
-                                                                 CASE_HEIGHT - WALL_THICKNESS * 2,
-                                                                 centered=[True, False]).cutBlind(
-        -CASE_DEPTH + WALL_THICKNESS)
+    wp = (wp.faces(">Z").workplane().move(0, WALL_THICKNESS)
+          .rect(CASE_WIDTH - WALL_THICKNESS * 2, CASE_HEIGHT - WALL_THICKNESS * 2, centered=[True, False])
+          .cutBlind(-CASE_DEPTH + WALL_THICKNESS))
 
 
 def display_window():
@@ -53,18 +53,20 @@ def display_window():
 
 def usb_hole():
     global wp
-    wp = (wp.faces(">Y").workplane()
+    wp = (wp.faces(">Y").workplane(offset=-TTGO_HEIGHT + TTGO_HEIGHT_WITH_USB)
           .move(0, WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB)
           .rect(USB_WIDTH - USB_DEPTH, USB_DEPTH, centered=[True, False])
           .cutBlind(-USB_HEIGHT)
 
-          .faces(">Y").workplane()
-          .move((USB_WIDTH - USB_DEPTH) / 2, WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB + USB_DEPTH / 2)
+          .faces(">Y").workplane(offset=-TTGO_HEIGHT + TTGO_HEIGHT_WITH_USB)
+          .move((USB_WIDTH - USB_DEPTH) / 2,
+                WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB + USB_DEPTH / 2)
           .circle(USB_DEPTH / 2)
           .cutBlind(-USB_HEIGHT)
 
-          .faces(">Y").workplane()
-          .move(-(USB_WIDTH - USB_DEPTH) / 2, WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB + USB_DEPTH / 2)
+          .faces(">Y").workplane(offset=-TTGO_HEIGHT + TTGO_HEIGHT_WITH_USB)
+          .move(-(USB_WIDTH - USB_DEPTH) / 2,
+                WALL_THICKNESS + TTGO_DEPTH_WITH_DISPLAY - TTGO_DEPTH_WITH_USB + USB_DEPTH / 2)
           .circle(USB_DEPTH / 2)
           .cutBlind(-USB_HEIGHT))
 
@@ -89,10 +91,26 @@ def usb_hole():
     #   .cutBlind(WALL_THICKNESS, taper=-30))
 
 
+def board_holder():
+    global wp
+    wp = (wp.faces("<Z[2]").workplane(invert=False)
+          .move(0, - TTGO_HEIGHT - WALL_THICKNESS)
+          .box(TTGO_WIDTH + WALL_THICKNESS * 2, VOLNY_KONEC, TTGO_DEPTH_WITH_DISPLAY + WALL_THICKNESS,
+               centered=[True, False, False]))
+    wp = (wp.faces(">Y[2]").workplane()
+          .move(0, 0)
+          # .box(1,1,1,centered=[True,False,False])
+          .rect(TTGO_WIDTH, TTGO_DEPTH_WITH_DISPLAY, centered=[True, False])
+          .cutBlind(-VOLNY_KONEC)
+          )
+
+
 ## ============================
 
 shell()
 display_window()
 usb_hole()
+
+board_holder()
 
 render(wp, 'hydroponic_controller_ttgo_case.stl')
