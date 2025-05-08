@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+WALL_THICKNESS = 1
 
 TTGO_WIDTH = 25.7
 TTGO_HEIGHT = 51.6
@@ -7,26 +8,60 @@ TTGO_HEIGHT_WITH_USB = 53
 TTGO_DEPTH_WITH_DISPLAY = 3
 TTGO_DEPTH_WITH_RESET = 3
 TTGO_DEPTH_WITH_USB = 4.3
+TTGO_SPACE_ABOVE = 8
+TTGO_SPACE_BEHIND = 8
+BOARD_DEPTH = 1.25
+
+VOLNY_KONEC = 5.4
+
 USB_WIDTH = 9.5
 USB_HEIGHT = 7.4
 USB_DEPTH = 3
+
 DISPLAY_HEIGHT = 26
 DISPLAY_WIDTH = 16.5
 DISPLAY_OFFSET = 8
+
 BUTTON_WIDTH = 3.3
 BUTTON_HEIGHT = 4.1
 BUTTON_CENTER_OFFSET_X = 4.5
 BUTTON_CENTER_OFFSET_Y = 3.2
+
 RESET_CENTER_OFFSET_Y = 11
 RESET_HEIGHT = 4.5
-VOLNY_KONEC = 5.4
-BOARD_DEPTH = 1.25
 
-WALL_THICKNESS = 1
+IRF_WIDTH = 33.7
+IRF_HEIGHT = 26
+IRF_DEPTH = 23.5
+IRF_PIN_LENGTH = 6.3
 
-CASE_HEIGHT = TTGO_HEIGHT + 10 + 50
-CASE_WIDTH = max(TTGO_WIDTH + 10, 40)
-CASE_DEPTH = 30
+TDS_WIDTH = 31.55
+TDS_HEIGHT = 42.6
+TDS_CONNECTOR_LENGTH = 4.45
+TDS_CONNECTOR_WIDTH = 20
+TDS_CONNECTOR_DEPTH = 7.5
+TDS_CONNECTOR_HEIGHT = 7.35
+TDS_BOARD = 3.2
+TDS_SPACE_BEHIND = 10
+
+TDS_PIN_LENGTH = 4.35
+TDS_DEPTH = 9.5
+TDS_PIN_WIDTH = 10
+TDS_PIN_DEPTH = 6
+
+MOTOR_WIRE_DIAMETER = 3.7
+DS_WIRE_MAX_DIAMETER = 6.45
+DS_DIAMETER = 5.9
+DS_WIRE_DIAMETER = 4.1
+TDS_WIRE_DIAMETER = 3.4
+
+CASE_HEIGHT = max(TTGO_HEIGHT + TTGO_SPACE_BEHIND + WALL_THICKNESS,
+                  TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND) + IRF_HEIGHT + 10 + 2 * WALL_THICKNESS
+CASE_WIDTH = max(TTGO_WIDTH + 3 * WALL_THICKNESS + 10, IRF_WIDTH + 2 * WALL_THICKNESS, TDS_WIDTH + 4 * WALL_THICKNESS)
+CASE_DEPTH = 2 * WALL_THICKNESS + max(
+    TTGO_DEPTH_WITH_DISPLAY + TTGO_SPACE_ABOVE + TDS_DEPTH + TDS_BOARD + WALL_THICKNESS, IRF_DEPTH)
+
+SPACE_BUFFER = .2
 
 # CASE_HEIGHT = TTGO_HEIGHT + 10
 # CASE_WIDTH = TTGO_WIDTH + 10
@@ -41,10 +76,23 @@ wp = cq.Workplane("XY")
 
 def shell():
     global wp
-    wp = wp.moveTo(0, -WALL_THICKNESS).box(CASE_WIDTH, CASE_HEIGHT, CASE_DEPTH, centered=[True, False, False])
+    wp = (wp.moveTo(0, -WALL_THICKNESS)
+          .box(CASE_WIDTH, CASE_HEIGHT, CASE_DEPTH, centered=[True, False, False]))
     wp = (wp.faces(">Z").workplane()
           .rect(CASE_WIDTH - WALL_THICKNESS * 2, CASE_HEIGHT - WALL_THICKNESS * 2, centered=[True, False])
           .cutBlind(-CASE_DEPTH + WALL_THICKNESS))
+
+
+def wire_holes():
+    global wp
+    wp = (wp.faces(">X").workplane(centerOption="CenterOfMass")
+          .move(CASE_HEIGHT / 4, 0)
+          .circle(MOTOR_WIRE_DIAMETER / 2).cutBlind(-WALL_THICKNESS))
+    wp = (wp.faces("<Y").workplane(invert=False, centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+          .move(CASE_WIDTH / 4, 0)
+          .moveTo(0, TTGO_DEPTH_WITH_DISPLAY + TTGO_SPACE_ABOVE - MOTOR_WIRE_DIAMETER / 2)
+          .circle(MOTOR_WIRE_DIAMETER / 2).cutBlind(-WALL_THICKNESS)
+          )
 
 
 def display_window():
@@ -162,8 +210,53 @@ def division():
     wp = (wp
           .faces("<Z[-2]")
           .workplane()
-          .moveTo(0, TTGO_HEIGHT + 5)
+          .moveTo(0, max(TTGO_HEIGHT + TTGO_SPACE_BEHIND,
+                         TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND))
           .box(CASE_WIDTH, WALL_THICKNESS, max(CASE_DEPTH - 5, TTGO_DEPTH_WITH_DISPLAY), centered=[True, False, False])
+          .faces(">Y[-3]")
+          .workplane(centerOption="CenterOfMass")
+          .move(-6, -3)
+          .rect(10, 10)
+          .cutBlind(-WALL_THICKNESS)
+          )
+
+
+def distancni_sloupky():
+    global wp
+    wp = (wp.faces("<Z[-3]").workplane(centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+          .move(-CASE_WIDTH / 2 + WALL_THICKNESS * 1.5, 0)
+          .box(WALL_THICKNESS * 3, 5, TTGO_DEPTH_WITH_DISPLAY + TTGO_SPACE_ABOVE, centered=[True, False, False]))
+    wp = (wp.faces("<Z[-3]").workplane(centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+          .move(CASE_WIDTH / 2 - WALL_THICKNESS * 1.5, 0)
+          .box(WALL_THICKNESS * 3, 5, TTGO_DEPTH_WITH_DISPLAY + + TTGO_SPACE_ABOVE, centered=[True, False, False]))
+    wp = (wp.faces("<Z[-3]").workplane(centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+          .move(-CASE_WIDTH / 2 + WALL_THICKNESS * 1.5, TTGO_HEIGHT + TTGO_SPACE_BEHIND - 5)
+          .box(WALL_THICKNESS * 3, 5, TTGO_DEPTH_WITH_DISPLAY + + TTGO_SPACE_ABOVE, centered=[True, False, False]))
+    wp = (wp.faces("<Z[-3]").workplane(centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+          .move(CASE_WIDTH / 2 - WALL_THICKNESS * 1.5, TTGO_HEIGHT + TTGO_SPACE_BEHIND - 5)
+          .box(WALL_THICKNESS * 3, 5, TTGO_DEPTH_WITH_DISPLAY + + TTGO_SPACE_ABOVE, centered=[True, False, False]))
+
+
+def tds_case():
+    global wp
+    wp = (wp.workplane(offset=-WALL_THICKNESS, centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+          .box(CASE_WIDTH - 2 * SPACE_BUFFER, max(TTGO_HEIGHT + TTGO_SPACE_BEHIND,
+                                                  TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND) - 2 * SPACE_BUFFER,
+               WALL_THICKNESS,
+               centered=[True, True, False])
+          .faces(">Z").workplane()
+          .box(TDS_WIDTH + WALL_THICKNESS * 2, TDS_HEIGHT + WALL_THICKNESS * 2, TDS_DEPTH + WALL_THICKNESS + TDS_BOARD,
+               centered=[True, True, False])
+          .faces(">Z").workplane()
+          .rect(TDS_WIDTH, TDS_HEIGHT).cutBlind(-TDS_DEPTH - WALL_THICKNESS - TDS_BOARD)
+
+          .faces("<Y[-2]").workplane(centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+          .move(0, TDS_BOARD)
+
+          .rect(TDS_CONNECTOR_WIDTH, TDS_CONNECTOR_DEPTH, centered=[True, False]).cutBlind(-WALL_THICKNESS)
+          .faces(">Y[-2]").workplane(centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+          .move(0, TDS_BOARD)
+          .rect(TDS_PIN_WIDTH, TDS_PIN_DEPTH + 20, centered=[True, False]).cutBlind(-WALL_THICKNESS)
           )
 
 
@@ -175,5 +268,11 @@ usb_hole()
 board_holder()
 buttons()
 division()
+distancni_sloupky()
+wire_holes()
 
 render(wp, 'hydroponic_controller_ttgo_case.stl')
+
+wp = cq.Workplane("XY")
+tds_case()
+render(wp, 'hydroponic_controller_ttgo_case_tds.stl')
