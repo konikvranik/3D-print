@@ -34,6 +34,7 @@ IRF_WIDTH = 33.7
 IRF_HEIGHT = 26
 IRF_DEPTH = 23.5
 IRF_PIN_LENGTH = 6.3
+IRF_HOLE_OFFSET = 7
 
 TDS_WIDTH = 31.55
 TDS_HEIGHT = 42.6
@@ -48,6 +49,8 @@ TDS_PIN_LENGTH = 4.35
 TDS_DEPTH = 9.5
 TDS_PIN_WIDTH = 10
 TDS_PIN_DEPTH = 6
+TDS_WIRE_WIDTH = 15
+TDS_WIRE_HEIGHT = 5
 
 MOTOR_WIRE_DIAMETER = 3.7
 DS_WIRE_MAX_DIAMETER = 6.45
@@ -56,7 +59,8 @@ DS_WIRE_DIAMETER = 4.1
 TDS_WIRE_DIAMETER = 3.4
 
 CASE_HEIGHT = max(TTGO_HEIGHT + TTGO_SPACE_BEHIND + WALL_THICKNESS,
-                  TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND) + IRF_HEIGHT + 10 + 2 * WALL_THICKNESS
+                  TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND) + 2 * (
+                          IRF_HEIGHT + IRF_PIN_LENGTH + WALL_THICKNESS) + WALL_THICKNESS
 CASE_WIDTH = max(TTGO_WIDTH + 3 * WALL_THICKNESS + 10, IRF_WIDTH + 2 * WALL_THICKNESS, TDS_WIDTH + 4 * WALL_THICKNESS)
 CASE_DEPTH = 2 * WALL_THICKNESS + max(
     TTGO_DEPTH_WITH_DISPLAY + TTGO_SPACE_ABOVE + TDS_DEPTH + TDS_BOARD + WALL_THICKNESS, IRF_DEPTH)
@@ -86,8 +90,9 @@ def shell():
 def wire_holes():
     global wp
     wp = (wp.faces(">X").workplane(centerOption="CenterOfMass")
-          .move(CASE_HEIGHT / 4, 0)
-          .circle(MOTOR_WIRE_DIAMETER / 2).cutBlind(-WALL_THICKNESS))
+          .move(CASE_HEIGHT / 8, 0)
+          .circle(max(DS_WIRE_MAX_DIAMETER, DS_WIRE_DIAMETER + MOTOR_WIRE_DIAMETER / 2)).cutBlind(-WALL_THICKNESS))
+
     wp = (wp.faces("<Y").workplane(invert=False, centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
           .move(CASE_WIDTH / 4, 0)
           .moveTo(0, TTGO_DEPTH_WITH_DISPLAY + TTGO_SPACE_ABOVE - MOTOR_WIRE_DIAMETER / 2)
@@ -212,12 +217,26 @@ def division():
           .workplane()
           .moveTo(0, max(TTGO_HEIGHT + TTGO_SPACE_BEHIND,
                          TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND))
-          .box(CASE_WIDTH, WALL_THICKNESS, max(CASE_DEPTH - 5, TTGO_DEPTH_WITH_DISPLAY), centered=[True, False, False])
+          .box(CASE_WIDTH, WALL_THICKNESS, TTGO_DEPTH_WITH_DISPLAY + TTGO_SPACE_ABOVE + 3 * WALL_THICKNESS,
+               centered=[True, False, False])
           .faces(">Y[-3]")
-          .workplane(centerOption="CenterOfMass")
-          .move(-6, -3)
-          .rect(10, 10)
-          .cutBlind(-WALL_THICKNESS)
+          .workplane(centerOption="CenterOfMass", invert=True)
+          .move(-IRF_HOLE_OFFSET, 0)
+          .rect(10, 15)
+          .cutBlind(WALL_THICKNESS)
+          )
+
+    wp = (wp
+          .faces("<Z[-2]")
+          .workplane()
+           .moveTo(0, WALL_THICKNESS+IRF_HEIGHT+IRF_PIN_LENGTH)
+          .box(CASE_WIDTH, WALL_THICKNESS, TTGO_DEPTH_WITH_DISPLAY + TTGO_SPACE_ABOVE + 3 * WALL_THICKNESS,
+               centered=[True, False, False])
+          .faces(">Y[-3]")
+          .workplane(centerOption="CenterOfMass", invert=True)
+          .move(-IRF_HOLE_OFFSET, 0)
+          .rect(10, 15)
+          .cutBlind(WALL_THICKNESS)
           )
 
 
@@ -240,10 +259,17 @@ def distancni_sloupky():
 def tds_case():
     global wp
     wp = (wp.workplane(offset=-WALL_THICKNESS, centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
-          .box(CASE_WIDTH - 2 * SPACE_BUFFER, max(TTGO_HEIGHT + TTGO_SPACE_BEHIND,
-                                                  TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND) - 2 * SPACE_BUFFER,
+          .box(CASE_WIDTH - 2 * WALL_THICKNESS, max(TTGO_HEIGHT + TTGO_SPACE_BEHIND,
+                                                    TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND) - 2 * SPACE_BUFFER,
                WALL_THICKNESS,
                centered=[True, True, False])
+
+          .faces(">Z").workplane()
+          .moveTo(0, (max(TTGO_HEIGHT + TTGO_SPACE_BEHIND,
+                          TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND) - 2 * SPACE_BUFFER) / 2)
+          .rect(TDS_WIRE_WIDTH, TDS_WIRE_HEIGHT * 2)
+          .cutBlind(-WALL_THICKNESS)
+
           .faces(">Z").workplane()
           .box(TDS_WIDTH + WALL_THICKNESS * 2, TDS_HEIGHT + WALL_THICKNESS * 2, TDS_DEPTH + WALL_THICKNESS + TDS_BOARD,
                centered=[True, True, False])
@@ -254,7 +280,7 @@ def tds_case():
           .move(0, TDS_BOARD)
 
           .rect(TDS_CONNECTOR_WIDTH, TDS_CONNECTOR_DEPTH, centered=[True, False]).cutBlind(-WALL_THICKNESS)
-          .faces(">Y[-2]").workplane(centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+          .faces(">Y[-3]").workplane(centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
           .move(0, TDS_BOARD)
           .rect(TDS_PIN_WIDTH, TDS_PIN_DEPTH + 20, centered=[True, False]).cutBlind(-WALL_THICKNESS)
           )
