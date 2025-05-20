@@ -2,6 +2,8 @@
 
 WALL_THICKNESS = 1
 
+WIRE_DIAMETER = 5
+
 TTGO_WIDTH = 25.7
 TTGO_HEIGHT = 51.6
 TTGO_HEIGHT_WITH_USB = 53
@@ -36,6 +38,7 @@ IRF_DEPTH = 23.5
 IRF_SPACE_BEHIND = 8
 IRF_PIN_LENGTH = 6.3
 IRF_HOLE_OFFSET = 7
+IRF_SPACE_ABOVE = .5
 
 TDS_WIDTH = 31.55
 TDS_HEIGHT = 42.6
@@ -53,9 +56,21 @@ TDS_PIN_DEPTH = 6
 TDS_WIRE_WIDTH = 15
 TDS_WIRE_HEIGHT = 5
 
-PH_WIDTH = 42
-PH_HEIGHT = 32
+PH_WIDTH = 42.5
+PH_WIDTH_WITH_PINS = 48.5
+PH_SPACE_BEHIND = 15
+PH_SPACE_ABOVE = 5
+PH_HEIGHT = 32.5
 PH_DEPTH = 20
+PH_RING_OFFSET = 15.48 - 13.31
+PH_ZAVIT_DIAMETER = 11.9
+PH_ZAVIT_OFFSET = 14
+PH_OUTER_RING_DIAMETER = 13.5
+PH_HOLE_DIAMETER = 3.3
+PH_HOLE_DISTANCE_X = 31.3
+PH_HOLE_DISTANCE_Y = 21.5
+PH_HOLE_OFFSET = 1.5
+PH_HEADER = 16
 
 MOTOR_WIRE_DIAMETER = 3.7
 DS_WIRE_MAX_DIAMETER = 6.45
@@ -63,12 +78,30 @@ DS_DIAMETER = 5.9
 DS_WIRE_DIAMETER = 4.1
 TDS_WIRE_DIAMETER = 3.4
 
-CASE_HEIGHT = max(TTGO_HEIGHT + TTGO_SPACE_BEHIND + WALL_THICKNESS,
-                  TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND) + 2 * (
-                      IRF_HEIGHT + IRF_PIN_LENGTH + IRF_SPACE_BEHIND + WALL_THICKNESS) + WALL_THICKNESS
-CASE_WIDTH = max(TTGO_WIDTH + 3 * WALL_THICKNESS + 10, IRF_WIDTH + 2 * WALL_THICKNESS, TDS_WIDTH + 4 * WALL_THICKNESS)
-CASE_DEPTH = 2 * WALL_THICKNESS + max(
-    TTGO_DEPTH_WITH_DISPLAY + TTGO_SPACE_ABOVE + TDS_DEPTH + TDS_BOARD + WALL_THICKNESS, IRF_DEPTH)
+CASE_HEIGHT = (
+        max(
+            TTGO_HEIGHT + TTGO_SPACE_BEHIND + WALL_THICKNESS,
+            TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND,
+        )
+        + max(
+    IRF_HEIGHT + IRF_PIN_LENGTH + IRF_SPACE_BEHIND,
+    PH_HEIGHT,
+)
+        + (IRF_HEIGHT + IRF_PIN_LENGTH + IRF_SPACE_BEHIND)
+        + 2 * WALL_THICKNESS
+)
+CASE_WIDTH = max(
+    TTGO_WIDTH + 3 * WALL_THICKNESS + 10, IRF_WIDTH + 2 * WALL_THICKNESS,
+    TDS_WIDTH + 4 * WALL_THICKNESS,
+    PH_WIDTH_WITH_PINS + PH_SPACE_BEHIND + 2 * WALL_THICKNESS,
+)
+CASE_DEPTH = (
+        max(
+            TTGO_DEPTH_WITH_DISPLAY + TTGO_SPACE_ABOVE + TDS_DEPTH + TDS_BOARD + WALL_THICKNESS,
+            IRF_DEPTH + IRF_SPACE_ABOVE + PH_DEPTH + PH_SPACE_ABOVE,
+        )
+        + 2 * WALL_THICKNESS
+)
 
 SPACE_BUFFER = .2
 
@@ -79,8 +112,6 @@ SPACE_BUFFER = .2
 import cadquery as cq
 
 from common import render
-
-wp = cq.Workplane("XY")
 
 
 def shell():
@@ -94,9 +125,21 @@ def shell():
 
 def wire_holes():
     global wp
-    wp = (wp.faces(">X").workplane(centerOption="CenterOfMass")
-          .move(CASE_HEIGHT / 8, 0)
-          .circle(max(DS_WIRE_MAX_DIAMETER, DS_WIRE_DIAMETER + MOTOR_WIRE_DIAMETER / 2)).cutBlind(-WALL_THICKNESS))
+    wire_hole = max(DS_WIRE_MAX_DIAMETER, DS_WIRE_DIAMETER + MOTOR_WIRE_DIAMETER + WIRE_DIAMETER * 2) / 2
+    wp = (wp.faces(">X").workplane(invert=False, centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+          .move(CASE_HEIGHT - wire_hole - IRF_HEIGHT / 2, CASE_DEPTH - wire_hole - PH_SPACE_ABOVE)
+          .circle(wire_hole).cutBlind(-WALL_THICKNESS))
+
+    wp = (wp.faces(">X").workplane(invert=False, centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+          .move(
+        max(
+            TTGO_HEIGHT + TTGO_SPACE_BEHIND,
+            TDS_HEIGHT + TDS_CONNECTOR_LENGTH + TDS_PIN_LENGTH + 2 * TDS_SPACE_BEHIND
+        ) + PH_ZAVIT_OFFSET,
+        CASE_DEPTH - PH_ZAVIT_DIAMETER / 2 - PH_SPACE_ABOVE)
+          .circle(PH_ZAVIT_DIAMETER / 2)
+          .cutBlind(-WALL_THICKNESS)
+          )
 
     wp = (wp.faces("<Y").workplane(invert=False, centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
           .move(CASE_WIDTH / 4, 0)
@@ -291,7 +334,28 @@ def tds_case():
           )
 
 
+def ph_case():
+    global wp
+    wp = (wp.workplane(offset=-WALL_THICKNESS, centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+    .moveTo(-WALL_THICKNESS, -WALL_THICKNESS)
+    .box(PH_WIDTH + 2 * WALL_THICKNESS, PH_HEIGHT + 2 * WALL_THICKNESS, PH_DEPTH + WALL_THICKNESS,
+         centered=[False, False, False])
+    .faces(">Z").workplane()
+    .rect(PH_WIDTH, PH_HEIGHT, centered=[False, False]).cutBlind(-PH_DEPTH)
+    .faces(">Z").workplane()
+    .moveTo(-WALL_THICKNESS, (PH_HEIGHT - PH_HEADER) / 2)
+    .rect(WALL_THICKNESS, PH_HEADER, centered=[False, False]).cutBlind(-PH_DEPTH + 5)
+    .faces(">X").workplane(centerOption="ProjectedOrigin", origin=cq.Vector(0, 0, 0))
+    .moveTo(PH_ZAVIT_OFFSET, PH_DEPTH - PH_ZAVIT_DIAMETER / 2 - 2).circle(
+        PH_ZAVIT_DIAMETER / 2).cutBlind(
+        -WALL_THICKNESS)
+
+    )
+
+
 ## ============================
+
+wp = cq.Workplane("XY")
 
 shell()
 display_window()
@@ -307,3 +371,7 @@ render(wp, 'hydroponic_controller_ttgo_case.stl')
 wp = cq.Workplane("XY")
 tds_case()
 render(wp, 'hydroponic_controller_ttgo_case_tds.stl')
+
+wp = cq.Workplane("XY")
+ph_case()
+render(wp, 'hydroponic_controller_ttgo_case_ph.stl')
