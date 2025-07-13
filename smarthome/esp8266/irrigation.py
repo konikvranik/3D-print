@@ -78,7 +78,7 @@ wp = wp.rect(18, 9, centered=True).cutThruAll()
 wp = wp.faces("<Z").workplane(centerOption="CenterOfBoundBox", invert=True).moveTo(10, height / 2 - 9 / 2)
 wp = wp.rect(18, 8, centered=True).extrude(wall)
 wp = wp.faces("<Z").workplane(centerOption="CenterOfBoundBox", invert=True).moveTo(5, height / 2 - 8 / 2)
-wp = wp.rect(6, 4, centered=True).extrude(depth - 2)
+wp = wp.rect(6, 4, centered=True).extrude(depth - 1)
 
 wp = wp.faces("<Z").workplane(centerOption="CenterOfBoundBox", invert=True).moveTo(-7.5, height / 2 - 9 / 2)
 wp = wp.rect(6 + 1, 4 + 1, centered=True).extrude(depth)
