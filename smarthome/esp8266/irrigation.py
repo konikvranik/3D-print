@@ -22,14 +22,15 @@ hole_dia = 2.75
 text_offset = 2
 
 
-def sloupek(face, x, y) -> Workplane:
+def sloupek(face, x, y, depth=depth, diameter=hole_dia) -> Workplane:
     return (face.tag("my_face")
             .moveTo(x, y)
-            .rect(hole_from_border * 2, hole_from_border * 2).extrude(depth)
+            .rect(hole_dia * 2, hole_from_border * 2).extrude(depth)
             .workplaneFromTagged("my_face")
+            .workplane(offset=depth)
             .moveTo(x, y)
-            .circle(hole_dia / 2)
-            .cutBlind(depth)
+            .circle(diameter / 2)
+            .cutBlind(-depth)
             )
 
 
@@ -37,8 +38,18 @@ wp = cq.Workplane("XY")
 wp = wp.box(width + wall * 2, height + wall * 2, depth + bottom + board + wall, centered=True)
 wp = wp.faces(">Z").rect(width, height).cutBlind(-depth - bottom - board)
 wp = wp.faces("<Z[-2]").workplane().tag("spodni_dno")
-wp = sloupek(wp, hole_dist / 2, (height / 2 - hole_from_border))
-wp = sloupek(wp.workplaneFromTagged("spodni_dno"), -hole_dist / 2, (height / 2 - hole_from_border))
-wp = sloupek(wp.workplaneFromTagged("spodni_dno"), 0, -(height / 2 - hole_from_border))
+wp = sloupek(wp, hole_dist / 2, (height / 2 - hole_from_border), diameter=hole_dia / 1.5)
+wp = sloupek(wp.workplaneFromTagged("spodni_dno"), -hole_dist / 2, (height / 2 - hole_from_border),
+             diameter=hole_dia / 1.5)
+wp = sloupek(wp.workplaneFromTagged("spodni_dno"), 0, -(height / 2 - hole_from_border), diameter=hole_dia / 1.5)
 
 render(wp, 'irrigation.stl')
+
+wp = cq.Workplane("XY")
+wp = wp.box(width + wall * 2, height + wall * 2, wall, centered=True)
+wp = wp.faces("<Z").workplane(invert=True).tag("spodni_dno")
+wp = sloupek(wp, hole_dist / 2, (height / 2 - hole_from_border), depth=bottom + wall)
+wp = sloupek(wp.workplaneFromTagged("spodni_dno"), -hole_dist / 2, (height / 2 - hole_from_border), depth=bottom + wall)
+wp = sloupek(wp.workplaneFromTagged("spodni_dno"), 0, -(height / 2 - hole_from_border), depth=bottom + wall)
+
+render(wp, 'irrigation_bottom.stl')
