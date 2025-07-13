@@ -56,6 +56,19 @@ wp = sloupek(wp.workplaneFromTagged("spodni_dno"), -hole_dist / 2, (height / 2 -
              diameter=hole_dia / 1.5)
 wp = sloupek(wp.workplaneFromTagged("spodni_dno"), 0, -(height / 2 - hole_from_border), diameter=hole_dia / 1.5)
 
+for i in range(0, 8):
+    wp = wp.faces(">X").workplane()
+    wp = wp.moveTo(-height / 2 + (2 - 1.5 / 2) + i * (15 + 1.5) + (15 + 1.5) / 2, (-board - bottom - 2) / 2 + wall)
+    wp = wp.rect(12.6, 5 + board + bottom + 2, centered=True).cutBlind(-wall)
+
+wp = wp.faces(">X").workplane()
+wp = wp.moveTo(height / 2 - 15.5, (-board - bottom - 2) / 2 + wall).rect(8, 5 + board + bottom + 2,
+                                                                         centered=True).cutBlind(-wall)
+
+for i in range(0, 8):
+    wp = wp.faces("<X").workplane()
+    wp = wp.moveTo(-(-height / 2 + (2 - 1.5 / 2) + i * (15 + 1.5) + (15 + 1.5) / 2), (-board - bottom - 2) / 2 + wall)
+    wp = wp.rect(12.6, 5 + board + bottom + 2, centered=True).cutBlind(-wall)
 
 render(wp, 'irrigation.stl')
 
@@ -65,5 +78,8 @@ wp = wp.faces("<Z").workplane(invert=True).tag("spodni_dno")
 wp = sloupek(wp, hole_dist / 2, (height / 2 - hole_from_border), depth=bottom + wall)
 wp = sloupek(wp.workplaneFromTagged("spodni_dno"), -hole_dist / 2, (height / 2 - hole_from_border), depth=bottom + wall)
 wp = sloupek(wp.workplaneFromTagged("spodni_dno"), 0, -(height / 2 - hole_from_border), depth=bottom + wall)
+
+wp = sloupek(wp.faces("<Z").workplane(invert=True), 0, -(height / 2 + hole_from_border + wall), depth=wall)
+wp = sloupek(wp.faces("<Z").workplane(invert=True), 0, (height / 2 + hole_from_border + wall), depth=wall)
 
 render(wp, 'irrigation_bottom.stl')
