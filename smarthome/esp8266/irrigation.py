@@ -19,6 +19,11 @@ hole_dist = 81.5
 hole_from_border = 3.7
 hole_dia = 2.75
 
+41
+131.5
+
+2 - 1.5 / 2
+
 text_offset = 2
 
 
@@ -37,11 +42,20 @@ def sloupek(face, x, y, depth=depth, diameter=hole_dia) -> Workplane:
 wp = cq.Workplane("XY")
 wp = wp.box(width + wall * 2, height + wall * 2, depth + bottom + board + wall, centered=True)
 wp = wp.faces(">Z").rect(width, height).cutBlind(-depth - bottom - board)
+
+wp = wp.faces("<Z").workplane(offset=wall, invert=True)
+wp = wp.moveTo(0, (-height + 131.5) / 2 + (2 - 1.5 / 2)).box(.5, 131.5, depth - 1, centered=[True, True, False])
+for i in range(0, 9):
+    wp = wp.faces("<Z").workplane(offset=wall, invert=True)
+    wp = wp.moveTo(0, - height / 2 + (2 - 1.5 / 2) + i * (15 + 1.5)).box(width, .5, depth - 1,
+                                                                         centered=[True, True, False])
+
 wp = wp.faces("<Z[-2]").workplane().tag("spodni_dno")
 wp = sloupek(wp, hole_dist / 2, (height / 2 - hole_from_border), diameter=hole_dia / 1.5)
 wp = sloupek(wp.workplaneFromTagged("spodni_dno"), -hole_dist / 2, (height / 2 - hole_from_border),
              diameter=hole_dia / 1.5)
 wp = sloupek(wp.workplaneFromTagged("spodni_dno"), 0, -(height / 2 - hole_from_border), diameter=hole_dia / 1.5)
+
 
 render(wp, 'irrigation.stl')
 
