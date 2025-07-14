@@ -31,7 +31,7 @@ SLOT_HEIGHT = 131.5
 # --- Text and cutout offsets ---
 TEXT_OFFSET = 2
 
-LABELS = {1: "Č", 2: "N"}
+LABELS = {1: "Čerpadlo", 2: "Nádrž"}
 
 
 def create_mounting_post(face, x, y, depth=DEPTH, diameter=HOLE_DIAMETER) -> Workplane:
@@ -157,13 +157,13 @@ def add_text(main_case):
     for i in range(1, 9):
 
         z_offset = -DEPTH / 2 - WALL_THICKNESS * 2
-        x_offset = 5
+        x_offset = 3
         y_offset = - HEIGHT / 2 + (8 - i) * SLOT_SPACING + SLOT_SPACING / 2
 
         main_case = inject_text(assy, f"{i}", main_case, x_offset, y_offset, z_offset)
 
         if i in LABELS:
-            main_case = inject_text(assy, f"{LABELS[i]}", main_case, - x_offset, y_offset, z_offset)
+            main_case = inject_text(assy, f"{LABELS[i]}", main_case, - x_offset, y_offset + SLOT_SPACING / 4, z_offset)
 
     assy.add(main_case, loc=cq.Location((0, 0, 0), (1, 0, 0), 0), name="case", color=cq.Color("green"))
 
@@ -171,7 +171,8 @@ def add_text(main_case):
 
 
 def inject_text(assy, t, main_case, x_offset, y_offset, z_offset):
-    text_shape = (cq.Workplane("XY").text(t, 5, WALL_THICKNESS + .1, font="Consolas", kind="bold")
+    text_shape = (cq.Workplane("XY").text(t, 5, WALL_THICKNESS + .1, font="Consolas", kind="bold",
+                                          halign="right" if x_offset < 0 else "left")
                   .mirror("XZ"))
     main_case = (main_case.faces("<Z").workplane()
                  .cut(text_shape.val().translate((x_offset, y_offset, z_offset))))
