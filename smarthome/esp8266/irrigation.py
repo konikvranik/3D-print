@@ -1,6 +1,8 @@
 import os
+
 import cadquery as cq
 from cadquery import Workplane
+
 from common import render
 
 # --- Environment setup ---
@@ -28,6 +30,8 @@ SLOT_HEIGHT = 131.5
 
 # --- Text and cutout offsets ---
 TEXT_OFFSET = 2
+
+LABELS = {1: "Č", 2: "N"}
 
 
 def create_mounting_post(face, x, y, depth=DEPTH, diameter=HOLE_DIAMETER) -> Workplane:
@@ -114,10 +118,17 @@ def add_mounting_posts(wp, tag_face, post_depth, diameter=HOLE_DIAMETER):
 def build_main_case():
     """Build the main case."""
     wp = cq.Workplane("XY")
-    wp = wp.box(WIDTH + WALL_THICKNESS * 2, HEIGHT + WALL_THICKNESS * 2, DEPTH + BOTTOM_HEIGHT + BOARD_THICKNESS + WALL_THICKNESS, centered=True)
+    wp = wp.box(WIDTH + WALL_THICKNESS * 2, HEIGHT + WALL_THICKNESS * 2,
+                DEPTH + BOTTOM_HEIGHT + BOARD_THICKNESS + WALL_THICKNESS, centered=True)
     wp = wp.edges().filter(lambda e: e.Center().z < wp.faces(">Z").val().Center().z).fillet(2)
     wp = wp.faces(">Z").rect(WIDTH, HEIGHT).cutBlind(-DEPTH - BOTTOM_HEIGHT - BOARD_THICKNESS)
     wp = add_partitions(wp)
+
+    wp = wp.faces("<Z").workplane(centerOption="CenterOfBoundBox", invert=True, offset=BOARD_THICKNESS).moveTo(
+        -(WIDTH / 2 - 8.6), HEIGHT / 2 - 22.5).circle(5 / 2).extrude(DEPTH - 3.5)
+    wp = wp.faces("<Z").workplane(centerOption="CenterOfBoundBox", invert=True, offset=BOARD_THICKNESS).moveTo(
+        -(WIDTH / 2 - 8.6), HEIGHT / 2 - 22.5).circle(4.5 / 2).cutBlind(DEPTH - 3.5)
+
     wp = wp.faces("<Z[-2]").workplane().tag("bottom_face")
     wp = add_mounting_posts(wp, "bottom_face", post_depth=DEPTH, diameter=HOLE_DIAMETER / 1.5)
     wp = add_side_cutouts(wp)
@@ -132,15 +143,49 @@ def build_bottom_plate():
     wp = wp.faces("<Z").workplane(invert=True).tag("bottom_face")
     wp = add_mounting_posts(wp, "bottom_face", post_depth=BOTTOM_HEIGHT + WALL_THICKNESS)
     # Additional mounting posts
-    wp = create_mounting_post(wp.faces("<Z").workplane(invert=True), 0, -(HEIGHT / 2 + HOLE_BORDER_OFFSET + WALL_THICKNESS), depth=WALL_THICKNESS)
-    wp = create_mounting_post(wp.faces("<Z").workplane(invert=True), 0, (HEIGHT / 2 + HOLE_BORDER_OFFSET + WALL_THICKNESS), depth=WALL_THICKNESS)
+    wp = create_mounting_post(wp.faces("<Z").workplane(invert=True), 0,
+                              -(HEIGHT / 2 + HOLE_BORDER_OFFSET + WALL_THICKNESS), depth=WALL_THICKNESS)
+    wp = create_mounting_post(wp.faces("<Z").workplane(invert=True), 0,
+                              (HEIGHT / 2 + HOLE_BORDER_OFFSET + WALL_THICKNESS), depth=WALL_THICKNESS)
     wp = wp.edges("<Z").fillet(.68)
     return wp
 
 
+def add_text(main_case):
+    assy = cq.Assembly()
+
+    for i in range(1, 9):
+
+        z_offset = -DEPTH / 2 - WALL_THICKNESS * 2
+        x_offset = 5
+        y_offset = - HEIGHT / 2 + (8 - i) * SLOT_SPACING + SLOT_SPACING / 2
+
+        main_case = inject_text(assy, f"{i}", main_case, x_offset, y_offset, z_offset)
+
+        if i in LABELS:
+            main_case = inject_text(assy, f"{LABELS[i]}", main_case, - x_offset, y_offset, z_offset)
+
+    assy.add(main_case, loc=cq.Location((0, 0, 0), (1, 0, 0), 0), name="case", color=cq.Color("green"))
+
+    return assy
+
+
+def inject_text(assy, t, main_case, x_offset, y_offset, z_offset):
+    text_shape = (cq.Workplane("XY").text(t, 5, WALL_THICKNESS + .1, font="Consolas", kind="bold")
+                  .mirror("XZ"))
+    main_case = (main_case.faces("<Z").workplane()
+                 .cut(text_shape.val().translate((x_offset, y_offset, z_offset))))
+    assy.add(text_shape, loc=cq.Location((x_offset, y_offset, z_offset), (1, 0, 0), 0), name=t, color=cq.Color("red"))
+    return main_case
+
+
 def main():
     """Main workflow."""
-    render(build_main_case(), 'irrigation.stl')
+    main_case = build_main_case()
+    render(main_case, 'irrigation.stl')
+
+    render(add_text(main_case), "irrigation.step")
+
     render(build_bottom_plate(), 'irrigation_bottom.stl')
 
 
