@@ -171,7 +171,7 @@ def add_text(main_case):
 
 
 def inject_text(assy, t, main_case, x_offset, y_offset, z_offset):
-    text_shape = (cq.Workplane("XY").text(t, 5, WALL_THICKNESS + .1, font="Consolas", kind="bold",
+    text_shape = (cq.Workplane("XY").text(t, 8, WALL_THICKNESS + .1, font="Consolas", kind="bold",
                                           halign="right" if x_offset < 0 else "left")
                   .mirror("XZ"))
     main_case = (main_case.faces("<Z").workplane()
