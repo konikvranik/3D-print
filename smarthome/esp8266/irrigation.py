@@ -10,10 +10,11 @@ os.environ["FONTCONFIG_FILE"] = "/etc/fonts/fonts.conf"
 os.environ["FONTCONFIG_PATH"] = "/etc/fonts/"
 
 # --- Dimensions ---
-WIDTH = 90
+WIDTH = 95
 HEIGHT = 165
 BOARD_THICKNESS = 1.45
-DEPTH = 16.7 - BOARD_THICKNESS
+DEPTH = 16.7 + 5 - BOARD_THICKNESS
+PARTITIONS_DEPTH = DEPTH - 5
 BOTTOM_HEIGHT = 4 - BOARD_THICKNESS
 WALL_THICKNESS = 1.5
 
@@ -24,6 +25,7 @@ HOLE_DIAMETER = 2.75
 
 # --- Slot and cutout parameters ---
 SLOT_WIDTH = 0.5
+SLOT_SPACE = 30
 SLOT_SPACING = 15 + 1.5
 SLOT_START_OFFSET = 2 - 1.5 / 2
 SLOT_HEIGHT = 131.5
@@ -52,12 +54,12 @@ def add_partitions(wp):
     # Vertical slot
     wp = wp.faces("<Z").workplane(offset=WALL_THICKNESS, invert=True)
     wp = wp.moveTo(0, (-HEIGHT + SLOT_HEIGHT) / 2 + SLOT_START_OFFSET)
-    wp = wp.box(SLOT_WIDTH, SLOT_HEIGHT, DEPTH - 1, centered=[True, True, False])
+    wp = wp.box(SLOT_WIDTH, SLOT_HEIGHT, PARTITIONS_DEPTH, centered=[True, True, False])
     # Horizontal slots
     for i in range(9):
         wp = wp.faces("<Z").workplane(offset=WALL_THICKNESS, invert=True)
         y_pos = -HEIGHT / 2 + SLOT_START_OFFSET + i * SLOT_SPACING
-        wp = wp.moveTo(0, y_pos).box(WIDTH, SLOT_WIDTH, DEPTH - 1, centered=[True, True, False])
+        wp = wp.moveTo(0, y_pos).box(WIDTH - SLOT_SPACE, SLOT_WIDTH, PARTITIONS_DEPTH, centered=[True, True, False])
     return wp
 
 
