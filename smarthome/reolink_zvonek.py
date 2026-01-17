@@ -36,7 +36,7 @@ def build_case():
     outer_body = outer_body.faces('>Y').workplane().moveTo(-10.5 - 44 / 2 + napajeci_kabel / 2, hole_offset).circle(
         napajeci_kabel / 2).cutBlind(-width / 2)
 
-    return inner_body.union(outer_body.translate((0, 2 * width, 0)))
+    return inner_body.union(outer_body.translate((0, width + 10, 0)))
 
 
 def main():
