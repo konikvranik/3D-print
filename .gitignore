@@ -4,3 +4,9 @@
 *.obj
 *.amf
 *.brep
+/.idea
+
+*.stl
+*.STL
+*.step
+*.3mf
