@@ -1,21 +1,30 @@
+import os
+import sys
+from unittest.mock import file_spec
+
 import cadquery as cq
 from cadquery import Workplane, Assembly
 
 
-def render(object , fname, tolerance=0.0001, angularTolerance=0.1):
+def render(object_to_draw, file_name=None, tolerance=0.0001, angularTolerance=0.1):
     # Check if show_object is available (for CQ-editor)
     if 'show_object' not in globals():
         def show_object(*args, **kwargs):
             pass
 
-    show_object(object)
+    show_object(object_to_draw)
 
+    if file_name is None:
+        main_file = sys.argv[0]
+        # Získáme název souboru bez cesty a změníme koncovku
+        base_name = os.path.splitext(os.path.basename(main_file))[0]
+        file_name = f"{base_name}.stl"
 
     # Export the model to STL
-    if isinstance(object, Assembly):
-        object.export(fname, tolerance=tolerance, angularTolerance=angularTolerance)
+    if isinstance(object_to_draw, Assembly):
+        object_to_draw.export(file_name, tolerance=tolerance, angularTolerance=angularTolerance)
     else:
-        cq.exporters.export(object, fname, None, tolerance, angularTolerance)
+        cq.exporters.export(object_to_draw, file_name, None, tolerance, angularTolerance)
 
 
 def calculate_pla_bore_diameter(screw_diameter: float) -> float:
