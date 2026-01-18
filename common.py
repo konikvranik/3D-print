@@ -58,3 +58,39 @@ def calculate_pla_bore_diameter(screw_diameter: float) -> float:
     calculated_hole = (screw_diameter * ratio) + printing_compensation
 
     return round(calculated_hole, 2)
+
+
+
+def build_toothed_cylinder(radius, cylinder_height, num_teeth=60, tooth_depth=2):
+    import math
+
+    # Vypočítáme úhel pro jeden zub
+    angle_per_tooth = 360 / num_teeth
+
+    # Vytvoříme ozubení jako průběžný polygon po obvodu
+    points = []
+    for i in range(num_teeth):
+        # Úhel pro začátek zubu (údolí)
+        angle_start = math.radians(i * angle_per_tooth)
+        # Úhel pro vrchol zubu
+        angle_peak = math.radians(i * angle_per_tooth + angle_per_tooth / 2)
+
+        # Bod v údolí (na poloměru radius)
+        x_start = radius * math.cos(angle_start)
+        y_start = radius * math.sin(angle_start)
+        points.append((x_start, y_start))
+
+        # Bod na vrcholu (na poloměru radius + tooth_depth)
+        x_peak = (radius + tooth_depth) * math.cos(angle_peak)
+        y_peak = (radius + tooth_depth) * math.sin(angle_peak)
+        points.append((x_peak, y_peak))
+
+    # Vytvoříme profil ozubení jako uzavřený polygon
+    result = (
+        cq.Workplane("XY")
+        .polyline(points)
+        .close()
+        .extrude(cylinder_height)
+    )
+
+    return result
