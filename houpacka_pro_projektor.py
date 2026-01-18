@@ -10,48 +10,62 @@ step_height = 11
 socket_offset = 33
 outer_radius = 20
 
-num_teeth = 12
+num_teeth = 240
 tooth_depth = 2
-tooth_width = 4
 
 
-def build_toothed_cylinder(radius, cylinder_height):
-    # 1. Základní válec
-    cylinder = cq.Workplane("XY").cylinder(cylinder_height, radius)
+def build_toothed_cylinder(radius, cylinder_height, num_teeth=60, tooth_depth=2):
+    import math
 
-    # 2. Definice jednoho zubu
-    # Zub vytvoříme jako malý kvádr na okraji válce
-    tooth = (
+    # Vypočítáme úhel pro jeden zub
+    angle_per_tooth = 360 / num_teeth
+
+    # Vytvoříme ozubení jako průběžný polygon po obvodu
+    points = []
+    for i in range(num_teeth):
+        # Úhel pro začátek zubu (údolí)
+        angle_start = math.radians(i * angle_per_tooth)
+        # Úhel pro vrchol zubu
+        angle_peak = math.radians(i * angle_per_tooth + angle_per_tooth / 2)
+
+        # Bod v údolí (na poloměru radius)
+        x_start = radius * math.cos(angle_start)
+        y_start = radius * math.sin(angle_start)
+        points.append((x_start, y_start))
+
+        # Bod na vrcholu (na poloměru radius + tooth_depth)
+        x_peak = (radius + tooth_depth) * math.cos(angle_peak)
+        y_peak = (radius + tooth_depth) * math.sin(angle_peak)
+        points.append((x_peak, y_peak))
+
+    # Vytvoříme profil ozubení jako uzavřený polygon
+    result = (
         cq.Workplane("XY")
-        .workplane(offset=cylinder_height / 2)  # Přesun na horní plochu pro kreslení profilu
-        .center(radius, 0)
-        .rect(tooth_depth * 2, tooth_width)
-        .extrude(-cylinder_height)  # Protlačení skrz celou výšku válce
+        .polyline(points)
+        .close()
+        .extrude(cylinder_height)
     )
 
-    # 3. Rozmístění zubů po obvodu (polární pole)
-    teeth = (
-        cq.Workplane("XY")
-        .polarArray(radius=radius, startAngle=0, angle=360, count=num_teeth)
-        .eachpoint(lambda loc: tooth.val().located(loc))
-    )
-
-    # Spojení válce se zuby
-    return cylinder.union(teeth)
+    return result
 
 
-def build_matching_block(toothed_cylinder):
+def build_matching_block(width, depth, height, cylinder):
     # Vytvoření bloku, ve kterém bude výřez
-    block_size = 60
+    # Blok bude dostatečně velký, aby se do něj válec vešel
+
+    # Vytvoříme blok a posuneme ho tak, aby se částečně překrýval s válcem
+    # Válec je centrovaný na (0,0), blok posuneme v ose X
     block = (
         cq.Workplane("XY")
-        .box(block_size, block_size, outer_width)
-        .translate((outer_radius + 10, 0, 0))  # Posuneme blok kousek stranou od středu válce
+        .box(width, depth, height)
+        .translate((depth / 2, 0, height / 2))
     )
 
     # Odečtení válce od bloku (vytvoření negativu)
-    # cut() vytvoří v bloku přesný výřez podle tvaru válce i se zuby
-    return block.cut(toothed_cylinder)
+    # Musíme zajistit, aby válec byl ve správné výšce (také od 0 nahoru)
+    cylinder_to_cut = cylinder.translate((0, 0, 0))  # Už je extrudovaný od 0 nahoru
+
+    return block.cut(cylinder_to_cut)
 
 
 def build_case():
@@ -60,13 +74,17 @@ def build_case():
 
 
 def main():
-    cylinder = build_toothed_cylinder(outer_depth / 2, outer_width)
-    block = build_matching_block(cylinder)
+    # Vytvoření válce se zuby
+    cylinder = build_toothed_cylinder(outer_depth / 2, outer_width, num_teeth=24, tooth_depth=3)
+    # Vytvoření bloku s výřezem pro tento válec
+    block = build_matching_block(outer_width, outer_depth, outer_depth / 2 + 20, cylinder)
 
-    # Zobrazení obou objektů najednou
-    # (V PyCharm/CadQuery editoru se zobrazí jako sestava)
+    # Export a zobrazení
     from common import render
-    render(cylinder.union(block))
+    # Vytvoříme sestavu (Assembly) pro lepší manipulaci s více objekty, 
+    # nebo je prostě přidáme k sobě. Pro render() v common.py stačí add().
+    # Blok je již posunutý v build_matching_block, tak aby se "zakousl" do válce.
+    render(cylinder.add(block))
 
 
 if __name__ == "__main__":
