@@ -5,6 +5,8 @@ from common import build_toothed_cylinder
 outer_width = 152
 inner_width = 133
 outer_depth = 170
+bottom_depth = 240
+bottom_width = 200
 inner_depth = 151
 socket_width = 15
 socket_height = 7
@@ -42,7 +44,11 @@ def build_matching_block(cylinder):
     wall = 5
     block = (
         cq.Workplane("XY")
-        .box(outer_depth, outer_width + wall * 2, height)
+        .rect(bottom_depth, bottom_width)  # Spodní podstava v Z=0
+        .workplane(offset=height)  # Přesun do výšky pyramidy
+        .rect(outer_depth, outer_width + wall * 2)  # Horní podstava
+        .loft(combine=True)
+        .translate((0, 0, -height / 2))  # Zarovnání na střed jako byl původní box
     )
 
     cylinder_to_cut = build_toothed_cylinder(cylinder_radius + .5, outer_width + 1, num_teeth,
