@@ -8,17 +8,17 @@ outer_depth = 170
 bottom_depth = 240
 bottom_width = 200
 inner_depth = 151
-socket_width = 15
-socket_height = 7
+socket_width = 20
+socket_height = 10
 step_height = 11
 socket_offset = 33
 outer_radius = 20
 bottom = 20
 cylinder_radius = outer_depth / 2
 
-inset = 1 / 2
+inset = 2 / 3
 
-num_teeth = 180
+num_teeth = 150
 tooth_depth = 2
 
 
@@ -33,7 +33,8 @@ def build_cylinder_part():
             (-cylinder_radius * inset + outer_depth / 2,
              - cylinder_radius * inset + outer_depth / 2 + step_height, 0)))
     cylinder = cylinder.cut(
-        Workplane('XY').box(outer_depth * 2 + tooth_depth * 2, socket_height, socket_width).translate(
+        Workplane('XY').box(outer_depth * 2 + tooth_depth * 2, socket_height, socket_width).fillet(
+            socket_height / 2 - .1).translate(
             (0, - cylinder_radius * inset + outer_depth / 2 - socket_offset, 0)))
 
     return cylinder
@@ -65,7 +66,9 @@ def build_matching_block(cylinder):
 
 
 def main():
-    cylinder = build_cylinder_part()
+    cylinder = build_cylinder_part().rotate((0, 0, 0), (1, 0, 0), 90).rotate((0, 0, 0), (0, 1, 0), 135).cut(
+        Workplane('XY').box(outer_depth * 2, outer_width * 2, cylinder_radius * 1.9).translate(
+            (0, 0, -cylinder_radius)))
     block = build_matching_block(cylinder)
 
     from common import render
