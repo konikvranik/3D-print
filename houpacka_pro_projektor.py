@@ -11,12 +11,12 @@ socket_height = 7
 step_height = 11
 socket_offset = 33
 outer_radius = 20
-bottom = 50
+bottom = 20
 cylinder_radius = outer_depth / 2
 
 inset = 1 / 2
 
-num_teeth = 150
+num_teeth = 180
 tooth_depth = 2
 
 
@@ -45,7 +45,10 @@ def build_matching_block(cylinder):
         .box(outer_depth, outer_width + wall * 2, height)
     )
 
-    cylinder_to_cut = cylinder.rotate((0, 0, 0), (1, 0, 0), 90).translate((0, 0, cylinder_radius - height / 2 + bottom))
+    cylinder_to_cut = build_toothed_cylinder(cylinder_radius + .5, outer_width + 1, num_teeth,
+                                             tooth_depth + .5).translate(
+        (0, 0, -outer_width / 2)).rotate((0, 0, 0), (1, 0, 0), 90).translate(
+        (0, 0, cylinder_radius - height / 2 + bottom))
 
     return block.cut(cylinder_to_cut).cut(
         cq.Workplane("XZ").cylinder(socket_width, (cylinder_radius + bottom)).cut(
