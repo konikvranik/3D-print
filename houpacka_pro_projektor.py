@@ -3,7 +3,7 @@ from cadquery import cq, Workplane
 from common import build_toothed_cylinder
 
 outer_width = 152
-inner_width = 133
+inner_width = 136
 outer_depth = 170
 bottom_depth = 240
 bottom_width = 200
