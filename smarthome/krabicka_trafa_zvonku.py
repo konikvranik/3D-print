@@ -1,7 +1,5 @@
 import cadquery as cq
-from cadquery.selectors import SubtractSelector
 
-from common import calculate_pla_bore_diameter
 from common import render
 
 width = 100
@@ -24,9 +22,9 @@ def build_tapered_prism():
         .loft()
     )
 
-    # Apply fillet only to edges that are not on the base
-    # Use negative selector to exclude edges from bottom face (<Z)
-    solid = solid.edges("~<Z").fillet(24)
+    # Apply fillet only to edges that are not on the base (z=0)
+    # Filter edges by z-coordinate of their center
+    solid = solid.edges().filter(lambda e: e.Center().z > 0).fillet(24)
 
     return solid
 
