@@ -22,9 +22,18 @@ def build_tapered_prism():
         .loft()
     )
 
-    # Apply fillet only to edges that are not on the base (z=0)
-    # Filter edges by z-coordinate of their center
-    solid = solid.edges().filter(lambda e: e.Center().z > 0).fillet(24)
+    # Apply fillet (r=24): exclude base edges (z=0) and far Y edges (y=75)
+    solid = (
+        solid.edges()
+        .filter(lambda e: e.Center().z > 0 and e.Center().y != 75)
+        .fillet(43)
+    )
+    # Apply smaller fillet (r=5) to far Y edges (y=75, excluding base)
+    solid = (
+        solid.edges()
+        .filter(lambda e: e.Center().z > 0 and e.Center().y == 75)
+        .fillet(5)
+    )
 
     return solid
 
