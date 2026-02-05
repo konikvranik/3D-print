@@ -20,6 +20,7 @@ WALL_THICKNESS = 3
 small_case_width = 40
 small_case_holes_distance = 80
 small_case_height = 10
+small_case_top_width = 10
 
 screw_hole_diameter = 3.2  # For M3 screws
 screw_hole_head_diameter = 5.5  # For M3 screws
@@ -49,13 +50,13 @@ def build_small_case():
                 + screw_hole_head_diameter / 2
                 + WALL_THICKNESS,
             ),
-            (-small_case_width / 2, -small_case_holes_distance / 2 - 20),
             (
-                small_case_width / 2 - 5,
+                small_case_width / 2 - small_case_top_width,
                 small_case_holes_distance / 2
                 + screw_hole_head_diameter / 2
                 + WALL_THICKNESS,
             ),
+            (-small_case_width / 2, -small_case_holes_distance / 2 - 20),
         ]
     ).close()
     wp = (
@@ -69,24 +70,26 @@ def build_small_case():
                     + screw_hole_head_diameter / 2
                     + WALL_THICKNESS,
                 ),
-                (-small_case_width / 2, -small_case_holes_distance / 2 - 20),
                 (
-                    small_case_width / 2 - 5,
+                    small_case_width / 2 - small_case_top_width,
                     small_case_holes_distance / 2
                     + screw_hole_head_diameter / 2
                     + WALL_THICKNESS,
                 ),
+                (-small_case_width / 2, -small_case_holes_distance / 2 - 20),
             ]
         )
         .close()
     )
 
     # Use Solid.makeLoft() for non-planar loft
-    solid = wp.loft()
+    wires = wp.vals()
+    if len(wires) == 2:
+        solid = cq.Workplane(obj=Solid.makeLoft(wires))
+    else:
+        solid = wp.loft()
 
-    # solid = (
-    #     solid.edges().filter(lambda e: e.Center().z > 0).fillet(small_case_height - 0.1)
-    # )
+    solid = solid.edges().filter(lambda e: e.Center().z > 0).fillet(2.4)
     solid = solid.faces("<Z").shell(WALL_THICKNESS)
 
     # Create mounting holes
@@ -106,7 +109,7 @@ def build_small_case():
             .translate((x_offset, y, 0))
         )
 
-        repeat_to_cut = 5
+        repeat_to_cut = 1
         for i in range(repeat_to_cut):
             screw_slot = (
                 screw_slot.cut(solid).translate((-WALL_THICKNESS, 0, 0)).cut(solid)
@@ -118,10 +121,10 @@ def build_small_case():
             solid.moveTo(x_offset, y)
             .circle(hole_radius)
             .cutThruAll()
-            .workplane(offset=-WALL_THICKNESS * 2)
+            .workplane(offset=-small_case_height + WALL_THICKNESS * 2)
             .moveTo(x_offset, y)
             .circle(screw_hole_head_diameter / 2)
-            .cutBlind(small_case_height)
+            .cutBlind(small_case_height * 2)
         )
 
     return solid
