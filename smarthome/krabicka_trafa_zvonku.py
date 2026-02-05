@@ -3,14 +3,7 @@ import os
 
 import cadquery as cq
 from cadquery import Edge, Wire, Vector, Solid
-from ocp_vscode import (
-    show,
-    show_object,
-    reset_show,
-    set_port,
-    set_defaults,
-    get_defaults,
-)
+from ocp_vscode import set_port
 
 set_port(3939)
 
@@ -64,12 +57,5 @@ def build_tapered_prism():
     return solid
 
 
-def main():
-    """Main workflow."""
-    # render tapered prism (10x10 -> 10x2)
-    tapered = build_tapered_prism()
-    render(tapered, "tapered_prism.stl")
-
-
 if __name__ == "__main__":
-    main()
+    render(build_tapered_prism())

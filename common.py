@@ -12,20 +12,20 @@ def render(object_to_draw, file_name=None, tolerance=0.0001, angularTolerance=0.
     # if 'show_object' not in globals():
     #     def show_object(*args, **kwargs):
     #         pass
-
-    show_object(object_to_draw)
-
+    
     if file_name is None:
         main_file = sys.argv[0]
         # Získáme název souboru bez cesty a změníme koncovku
         base_name = os.path.splitext(os.path.basename(main_file))[0]
-        file_name = f"{base_name}.stl"
+        file_name = f"out/{base_name}.stl"
 
     # Export the model to STL
     if isinstance(object_to_draw, Assembly):
         object_to_draw.export(file_name, tolerance=tolerance, angularTolerance=angularTolerance)
     else:
         cq.exporters.export(object_to_draw, file_name, None, tolerance, angularTolerance)
+
+    show_object(object_to_draw)
 
 
 def calculate_pla_bore_diameter(screw_diameter: float) -> float:
