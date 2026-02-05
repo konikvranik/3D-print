@@ -63,7 +63,7 @@ def build_small_case():
         wp.workplane(offset=small_case_height)
         .polyline(
             [
-                (small_case_width / 2, -small_case_holes_distance / 2 - 20),
+                (small_case_width / 2, -small_case_holes_distance / 2 - 20+5),
                 (
                     small_case_width / 2,
                     small_case_holes_distance / 2
@@ -71,50 +71,26 @@ def build_small_case():
                     + WALL_THICKNESS,
                 ),
                 (
-                    small_case_width / 2 - small_case_top_width,
+                    small_case_width / 2 - small_case_top_width+5,
                     small_case_holes_distance / 2
                     + screw_hole_head_diameter / 2
                     + WALL_THICKNESS,
                 ),
-                (
-                    small_case_width / 2 - small_case_top_width,
-                    -small_case_holes_distance / 2 + 10,
-                ),
-                (-small_case_width / 2, -small_case_holes_distance / 2 - 20),
+                (-small_case_width / 2+8, -small_case_holes_distance / 2 - 20+5),
             ]
         )
         .close()
     )
 
     # Use Solid.makeLoft() for non-planar loft
-    # Extract wires from context
-    all_wires = [w for w in wp.ctx.pendingWires]
-    cavity = cq.Workplane(obj=Solid.makeLoft(all_wires))
+    wires = wp.vals()
+    if len(wires) == 2:
+        solid = cq.Workplane(obj=Solid.makeLoft(wires))
+    else:
+        solid = wp.loft()
 
-    # Apply fillet to cavity edges
-    cavity = cavity.edges().filter(lambda e: e.Center().z > 0).fillet(2.4)
-
-    # Now create outer shell by offsetting outward with 'arc' for smooth corners
-    bottom_inner = all_wires[0]
-    top_inner = all_wires[1]
-
-    bottom_outer_wires = bottom_inner.offset2D(WALL_THICKNESS, kind="arc")
-    top_outer_wires = top_inner.offset2D(WALL_THICKNESS, kind="arc")
-
-    if bottom_outer_wires and top_outer_wires:
-        bottom_outer = bottom_outer_wires[0]
-        top_outer = top_outer_wires[0].translate(
-            (0, 0, WALL_THICKNESS)
-        )  # Add height for lid
-
-        # Create outer shell
-        outer_solid = cq.Workplane(obj=Solid.makeLoft([bottom_outer, top_outer]))
-
-        # Subtract ONLY cavity (without lid) from outer shell
-        solid = outer_solid.cut(cavity)
-
-        # Apply fillet to outer edges for smooth finish (if needed)
-        # solid = solid.edges("|Z").fillet(0.5)
+    # solid = solid.edges().filter(lambda e: e.Center().z > 0).fillet(2.4)
+    solid = solid.faces("<Z").shell(WALL_THICKNESS)
 
     # Create mounting holes
     hole_radius = screw_hole_diameter / 2  # For M3 screws
