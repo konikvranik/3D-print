@@ -76,6 +76,10 @@ def build_small_case():
                     + screw_hole_head_diameter / 2
                     + WALL_THICKNESS,
                 ),
+                (
+                    small_case_width / 2 - small_case_top_width,
+                    -small_case_holes_distance / 2 + 10,
+                ),
                 (-small_case_width / 2, -small_case_holes_distance / 2 - 20),
             ]
         )
