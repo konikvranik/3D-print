@@ -3,7 +3,15 @@ import os
 
 import cadquery as cq
 from cadquery import Edge, Wire, Vector, Solid
-from ocp_vscode import show, show_object, reset_show, set_port, set_defaults, get_defaults
+from ocp_vscode import (
+    show,
+    show_object,
+    reset_show,
+    set_port,
+    set_defaults,
+    get_defaults,
+)
+
 set_port(3939)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -52,10 +60,23 @@ def build_tapered_prism():
     solid = cq.Workplane(obj=outer_solid)
 
     # Apply fillet BEFORE hollowing (on solid outer surface)
-    # Use r=5 which works with this geometry
-    solid = solid.edges().filter(lambda e: e.Center().z > 0).fillet(5)
+    # Use r=5 for all edges as it's the maximum reliable radius
+    #solid = solid.edges().filter(lambda e: e.Center().z > 0).fillet(5)
+    
+   # Apply fillet (r=24): exclude base edges (z=0) and far Y edges (y=75)
+    solid = (
+        solid.edges()
+        .filter(lambda e: e.Center().z > 0 and e.Center().y != 75)
+        .fillet(43)
+    )
+    # Apply smaller fillet (r=5) to far Y edges (y=75, excluding base)
+    solid = (
+        solid.edges()
+        .filter(lambda e: e.Center().z > 0 and e.Center().y == 75)
+        .fillet(5)
+    )
 
-    # Make hollow using shell() - select bottom face first to remove it
+        
     # When faces are selected before shell(), they are removed during shelling
     solid = solid.faces("<Z").shell(WALL_THICKNESS)
 
