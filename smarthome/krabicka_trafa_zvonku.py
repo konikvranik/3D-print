@@ -87,11 +87,9 @@ def build_small_case():
     )
 
     # Use Solid.makeLoft() for non-planar loft
-    wires = wp.vals()
-    if len(wires) == 2:
-        solid = cq.Workplane(obj=Solid.makeLoft(wires))
-    else:
-        solid = wp.loft()
+    # Extract wires from context
+    all_wires = [w for w in wp.ctx.pendingWires]
+    solid = cq.Workplane(obj=Solid.makeLoft(all_wires))
 
     solid = solid.edges().filter(lambda e: e.Center().z > 0).fillet(2.4)
     solid = solid.faces("<Z").shell(WALL_THICKNESS)
