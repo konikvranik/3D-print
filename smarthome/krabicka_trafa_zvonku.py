@@ -13,7 +13,7 @@ from common import render
 top_width = 100
 bottom_width = 30
 top_height = 60
-bottom_height = 30
+bottom_height = 40
 depth = 150
 WALL_THICKNESS = 3
 
@@ -46,7 +46,7 @@ def build_tapered_prism():
     solid = (
         solid.edges()
         .filter(lambda e: e.Center().z > 0 and e.Center().y != 75)
-        .fillet(24)
+        .fillet(20)
     )
     solid = (
         solid.edges()
