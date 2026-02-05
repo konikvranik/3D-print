@@ -20,10 +20,10 @@ WALL_THICKNESS = 3
 small_case_width = 40
 small_case_holes_distance = 80
 small_case_height = 10
-small_case_top_width = 10
+small_case_top_width = 15
 
-screw_hole_diameter = 3.2  # For M3 screws
-screw_hole_head_diameter = 5.5  # For M3 screws
+screw_hole_diameter = 4  # For M3 screws
+screw_hole_head_diameter = 7.5  # For M3 screws
 
 
 def build_small_case():
@@ -63,7 +63,7 @@ def build_small_case():
         wp.workplane(offset=small_case_height)
         .polyline(
             [
-                (small_case_width / 2, -small_case_holes_distance / 2 - 20+5),
+                (small_case_width / 2, -small_case_holes_distance / 2 - 20 + 5),
                 (
                     small_case_width / 2,
                     small_case_holes_distance / 2
@@ -71,12 +71,12 @@ def build_small_case():
                     + WALL_THICKNESS,
                 ),
                 (
-                    small_case_width / 2 - small_case_top_width+5,
+                    small_case_width / 2 - small_case_top_width + 5,
                     small_case_holes_distance / 2
                     + screw_hole_head_diameter / 2
                     + WALL_THICKNESS,
                 ),
-                (-small_case_width / 2+8, -small_case_holes_distance / 2 - 20+5),
+                (-small_case_width / 2 + 8, -small_case_holes_distance / 2 - 20 + 5),
             ]
         )
         .close()
@@ -126,6 +126,17 @@ def build_small_case():
             .circle(screw_hole_head_diameter / 2)
             .cutBlind(small_case_height * 2)
         )
+
+    solid = (
+        solid.faces(">Y")
+        .workplane()
+        .moveTo(
+            -small_case_width / 2 + small_case_top_width - WALL_THICKNESS - 5 / 3,
+            -5 / 3,
+        )
+        .circle(5 / 2)
+        .cutBlind(-WALL_THICKNESS)
+    )
 
     return solid
 
@@ -209,5 +220,5 @@ def cylinder_hole(solid, direction):
 
 
 if __name__ == "__main__":
-    # render(build_main_case())
+    render(build_main_case())
     render(build_small_case())
