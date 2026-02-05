@@ -19,6 +19,7 @@ def render(object_to_draw, file_name=None, tolerance=0.0001, angularTolerance=0.
         base_name = os.path.splitext(os.path.basename(main_file))[0]
         file_name = f"out/{base_name}.stl"
 
+    print(f"Exporting model to {file_name}...")
     # Export the model to STL
     if isinstance(object_to_draw, Assembly):
         object_to_draw.export(file_name, tolerance=tolerance, angularTolerance=angularTolerance)
