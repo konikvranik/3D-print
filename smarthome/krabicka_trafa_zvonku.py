@@ -63,14 +63,25 @@ def build_tapered_prism():
 
 
 def cylinder_hole(solid, direction):
-    return (
-        solid.union(
-            cq.Workplane("XY")
-            .cylinder(bottom_height, 5, centered=(True, True, False))
-            .translate((direction * (top_width / 2 - 5), 0, 0))
+    screw_slot = (
+        cq.Workplane("XY")
+        .cylinder(bottom_height / 2, 5, centered=(True, True, False))
+        .translate((direction * (top_width / 2 - 5), 0, 0))
+    )
+
+    repeat_to_cut = 5
+    for i in range(repeat_to_cut):
+        screw_slot = (
+            screw_slot.cut(solid)
+            .translate((-direction * WALL_THICKNESS, 0, 0))
             .cut(solid)
-            .translate((direction * WALL_THICKNESS, 0, 0))
         )
+    screw_slot = screw_slot.translate(
+        (direction * (repeat_to_cut + 1) * WALL_THICKNESS, 0, 0)
+    )
+
+    return (
+        solid.union(screw_slot)
         .faces("<Z")
         .workplane()
         .moveTo(direction * (top_width / 2 - 5 + WALL_THICKNESS), 0)
