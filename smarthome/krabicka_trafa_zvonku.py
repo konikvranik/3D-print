@@ -10,8 +10,10 @@ set_port(3939)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common import render
 
-width = 100
-height = 60
+top_width = 100
+bottom_width = 30
+top_height = 60
+bottom_height = 30
 depth = 150
 WALL_THICKNESS = 3
 
@@ -22,12 +24,12 @@ def build_tapered_prism():
     Uses a loft between two centered rectangles.
     """
     wp = cq.Workplane("XY")
-    bottom_wire = wp.rect(width, depth).wire().val()
+    bottom_wire = wp.rect(top_width, depth).wire().val()
     top_points = [
-        Vector(-width / 2, depth / 2, height),  # Left top
-        Vector(width / 2, depth / 2, height),  # Right top
-        Vector(25, -50, 30),  # Right bottom
-        Vector(-25, -50, 30),  # Left bottom
+        (-top_width / 2, depth / 2, top_height),  # Left top
+        (top_width / 2, depth / 2, top_height),  # Right top
+        (bottom_width / 2, -depth / 2 * 0.7, bottom_height),  # Right bottom
+        (-bottom_width / 2, -depth / 2 * 0.7, bottom_height),  # Left bottom
     ]
     # Create edges and wire for top polygon
     edges = []
@@ -44,7 +46,7 @@ def build_tapered_prism():
     solid = (
         solid.edges()
         .filter(lambda e: e.Center().z > 0 and e.Center().y != 75)
-        .fillet(15)
+        .fillet(24)
     )
     solid = (
         solid.edges()
@@ -54,7 +56,20 @@ def build_tapered_prism():
 
     solid = solid.faces("<Z").shell(WALL_THICKNESS)
 
+    solid = cylinder_hole(solid, -1)
+    solid = cylinder_hole(solid, 1)
+
     return solid
+
+
+def cylinder_hole(solid, direction):
+    return solid.union(
+        cq.Workplane("XY")
+        .cylinder(bottom_height, 5, centered=(True, True, False))
+        .translate((direction * (top_width / 2 - 5), 0, 0))
+        .cut(solid)
+        .translate((direction * WALL_THICKNESS, 0, 0))
+    ).faces("<Z").workplane().moveTo(direction * (top_width / 2 - 5), 0).circle(2).cutThruAll()
 
 
 if __name__ == "__main__":
