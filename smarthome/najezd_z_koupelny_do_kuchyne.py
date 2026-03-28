@@ -21,11 +21,11 @@ def build_ramp():
     """
 
     # Vytvoříme profil nájezdu (pravúhlý trojúhelník s odlehčením na špičce)
-    # Pro 3D tisk je dobré mít malou hranu na začátku, aby se první vrstva lépe uchytila
-    tip_height = 0.5
+    # Pro 3D tisk je dobré mít malou hranu na začátku, aby se první vrstva lépe uchytila.
+    # Abychom mohli zaoblit hranu, musí být tato výška aspoň 1.0 mm.
+    tip_height = 0
 
-    # Profil v rovině XZ (v CadQuery je defaultní pracovní rovina XY)
-    # X=hloubka, Z=výška
+    # Profil v rovině XZ (X=hloubka, Z=výška)
     profile = (
         cq.Workplane("XZ")
         .moveTo(0, 0)
@@ -38,47 +38,40 @@ def build_ramp():
     # Extrude (vytažení) do šířky (WIDTH)
     ramp = profile.extrude(WIDTH)
 
-    # Přidáme zaoblení (fillet) podle požadavku:
-    # 1. Boční hrany nájezdové rampy (šikmé hrany na bocích)
-    # 2. Spodní kolmá hrana (náběhová hrana u země)
-    
-    # Náběhová hrana (rovnoběžná s Y, na začátku X=0)
-    # Použijeme menší poloměr, aby nedocházelo ke kolizi s tip_height
-    # Zkusíme 0.2 mm pro náběhovou hranu
-    try:
-        # Vybereme náběhovou hranu (ta úplně dole u X=0)
-        front_edge = ramp.edges("|Y").edges("<X").edges("<Z")
-        ramp = ramp.newObject(front_edge.objects).fillet(3)
-    except:
-        print("Warning: Front fillet failed.")
-    
-    # Boční šikmé hrany
-    try:
-        skew_edges = [e for e in ramp.faces("|Y").edges().objects 
-                      if e.geomType() == "LINE" and 
-                      not (abs(e.endPoint().sub(e.startPoint()).normalized().dot(cq.Vector(1,0,0))) > 0.99 or
-                           abs(e.endPoint().sub(e.startPoint()).normalized().dot(cq.Vector(0,1,0))) > 0.99 or
-                           abs(e.endPoint().sub(e.startPoint()).normalized().dot(cq.Vector(0,0,1))) > 0.99)]
-        if skew_edges:
-            ramp = ramp.newObject(skew_edges).fillet(3)
-    except Exception as e:
-        print(f"Warning: Side fillet failed: {e}")
-    
-    # POZOR: fillet na hranách může změnit stack. Musíme zajistit, aby stack obsahoval původní těleso (Solid)
-    # pro následné operace (jako rotace). V CadQuery fillet na hranách vrací těleso s aplikovaným zaoblením.
-    # Ale pokud jsme na stacku měli jen hrany, musíme se vrátit k tělesu.
-    # Většinou .fillet() na hranách v CQ funguje tak, že vybere hrany ze stacku a aplikuje to na Solid, 
-    # ze kterého pocházejí.
-
     # Otočení tak, aby ležel na nájezdové ploše (šířka 250, výška 30, hloubka 65)
     # Úhel sklonu nájezdu: atan((HEIGHT - tip_height) / DEPTH)
     import math
     angle = math.degrees(math.atan2(HEIGHT - tip_height, DEPTH))
     
-    # Otočíme kolem osy Y (šířka)
-    # Původně je profil v rovině XZ, extrude do směru Y.
-    # Aby šikmá plocha ležela na podložce (rovina XY), otočíme model o vypočtený úhel.
-    return ramp.rotate((0, 0, 0), (0, 1, 0), 180 + angle)
+    # Otočíme kolem osy Y (šířka) tak, aby šikmá plocha byla nahoře a vodorovná (pro tisk)
+    # Původní orientace: 
+    # Spodek (0,0)-(DEPTH,0) je v rovině Z=0.
+    # Šikmá plocha (0, tip_height)-(DEPTH, HEIGHT).
+    # Po otočení o (180 + angle) kolem Y:
+    # Šikmá plocha bude v rovině Z=0.
+    ramp = ramp.rotate((0, 0, 0), (0, 1, 0), 180 + angle)
+
+    # Nyní aplikujeme zaoblení (fillet) na modelu v tiskové orientaci:
+    # 1. Horní hrana u země (bývalá pata nájezdu u bodu 0,0) - je to ta nejvyšší hrana po otočení.
+    # 2. Boční hrany, které byly původně šikmé (nyní jsou to vodorovné hrany v Z=0).
+
+    # Zaoblení "nejvyšší" hrany (původní 0,0)
+    try:
+        # Po otočení o 180+angle, bod (0,0) v XZ se dostane na vrchol.
+        top_edge = ramp.edges("|Y").edges(">Z")
+        ramp = ramp.newObject(top_edge.objects).fillet(2.0)
+    except Exception as e:
+        print(f"Warning: Top fillet failed: {e}")
+
+    # Zaoblení bočních hran (původně šikmé, nyní leží v Z=0 na bocích)
+    try:
+        # Boční hrany v rovině podložky (Z=0)
+        side_edges = ramp.edges("<Z").edges("|X")
+        ramp = ramp.newObject(side_edges.objects).fillet(5.0)
+    except Exception as e:
+        print(f"Warning: Side fillet failed: {e}")
+
+    return ramp
 
 
 def main():
