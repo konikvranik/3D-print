@@ -55,7 +55,12 @@ def build_ramp():
 
 def main():
     """Hlavní workflow."""
-    render(build_ramp(), "out/najezd_z_koupelny_do_kuchyne.stl")
+    # Určíme absolutní cestu k výstupnímu souboru v kořenovém adresáři projektu
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    output_path = os.path.join(project_root, "out", "najezd_z_koupelny_do_kuchyne.stl")
+    
+    render(build_ramp(), output_path)
 
 
 if __name__ == "__main__":

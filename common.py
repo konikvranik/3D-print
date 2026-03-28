@@ -29,6 +29,11 @@ def render(object_to_draw, file_name=None, tolerance=0.0001, angularTolerance=0.
         object_to_draw.export(file_name, tolerance=tolerance, angularTolerance=angularTolerance)
     else:
         cq.exporters.export(object_to_draw, file_name, None, tolerance, angularTolerance)
+    
+    if os.path.exists(file_name):
+        print(f"Successfully saved to {os.path.abspath(file_name)} ({os.path.getsize(file_name)} bytes)")
+    else:
+        print(f"FAILED to save to {os.path.abspath(file_name)}")
 
     try:
         show_object(object_to_draw)
