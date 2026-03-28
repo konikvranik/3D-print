@@ -1,6 +1,5 @@
 import os
 import sys
-from unittest.mock import file_spec
 
 import cadquery as cq
 from cadquery import Workplane, Assembly
@@ -19,14 +18,22 @@ def render(object_to_draw, file_name=None, tolerance=0.0001, angularTolerance=0.
         base_name = os.path.splitext(os.path.basename(main_file))[0]
         file_name = f"out/{base_name}.stl"
 
-    print(f"Exporting model to {file_name}...")
+    # Zajistíme existenci adresáře
+    dir_name = os.path.dirname(file_name)
+    if dir_name and not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+
+    print(f"Exporting model to {os.path.abspath(file_name)}...")
     # Export the model to STL
     if isinstance(object_to_draw, Assembly):
         object_to_draw.export(file_name, tolerance=tolerance, angularTolerance=angularTolerance)
     else:
         cq.exporters.export(object_to_draw, file_name, None, tolerance, angularTolerance)
 
-    show_object(object_to_draw)
+    try:
+        show_object(object_to_draw)
+    except Exception as e:
+        print(f"Note: Could not show object in viewer: {e}")
 
 
 def calculate_pla_bore_diameter(screw_diameter: float) -> float:

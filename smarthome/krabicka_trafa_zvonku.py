@@ -220,5 +220,5 @@ def cylinder_hole(solid, direction):
 
 
 if __name__ == "__main__":
-    render(build_main_case())
-    render(build_small_case())
+    render(build_main_case(), "out/krabicka_trafa_zvonku_hlavni.stl")
+    render(build_small_case(), "out/krabicka_trafa_zvonku_mala.stl")
