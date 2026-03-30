@@ -1,14 +1,15 @@
-import sys
 import os
+import sys
 
 import cadquery as cq
+from cadquery import Workplane
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common import render
 
 # Rozměry nájezdu (šířka, hloubka, výška)
 # Uživatel požaduje: šířka 250, výška 30, hloubka 65
-WIDTH = 245.0
+WIDTH = 249.0
 DEPTH = 65.0
 HEIGHT = 30.0
 
@@ -42,7 +43,7 @@ def build_ramp():
     # Úhel sklonu nájezdu: atan((HEIGHT - tip_height) / DEPTH)
     import math
     angle = math.degrees(math.atan2(HEIGHT - tip_height, DEPTH))
-    
+
     # Otočíme kolem osy Y (šířka) tak, aby šikmá plocha byla nahoře a vodorovná (pro tisk)
     # Původní orientace: 
     # Spodek (0,0)-(DEPTH,0) je v rovině Z=0.
@@ -63,14 +64,17 @@ def build_ramp():
     except Exception as e:
         print(f"Warning: Top fillet failed: {e}")
 
+    return ramp
+
+
+def side_fillet(ramp: Workplane, direction="<") -> Workplane:
     # Zaoblení bočních hran (původně šikmé, nyní leží v Z=0 na bocích)
     try:
         # Boční hrany v rovině podložky (Z=0)
-        side_edges = ramp.edges("<Z").edges("|X")
+        side_edges = ramp.edges("<Z").edges("%sY" % direction)
         ramp = ramp.newObject(side_edges.objects).fillet(5.0)
     except Exception as e:
         print(f"Warning: Side fillet failed: {e}")
-
     return ramp
 
 
@@ -79,9 +83,10 @@ def main():
     # Určíme absolutní cestu k výstupnímu souboru v kořenovém adresáři projektu
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(script_dir)
-    output_path = os.path.join(project_root, "out", "najezd_z_koupelny_do_kuchyne.stl")
-    
-    render(build_ramp(), output_path)
+    output_path = os.path.join(project_root, "out", "najezd_z_koupelny_do_kuchyne_left.stl")
+    render(side_fillet(build_ramp()), output_path)
+    output_path = os.path.join(project_root, "out", "najezd_z_koupelny_do_kuchyne_right.stl")
+    render(side_fillet(build_ramp(), ">"), output_path)
 
 
 if __name__ == "__main__":
