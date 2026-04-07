@@ -9,13 +9,13 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from common import render
 
-diameter = 52
+diameter = 53
 depth = 10
 cut_thick = 5
 thick = 2
 cut = 0.2
 offset = 15
-torus_radius = .5
+torus_radius = 1
 cutout_radius = diameter / 2 + thick * 4
 
 
