@@ -2,17 +2,17 @@
 #
 # Usage:
 #   make                              - build everything
-#   make out/toys/foo.stl             - build single file
+#   make toys/foo.stl                 - build single file
 #   make stl / make 3mf / make pdf    - build by type
 #   make clean / make list
 #
 # Pattern rules (the Make way):
-#   out/%.stl: %.scad          OpenSCAD -> STL
-#   out/%.3mf: %.scad          OpenSCAD -> 3MF
-#   out/%.stl: %.py            CadQuery Python -> STL
-#   out/%.pdf: %.py            ReportLab Python -> PDF
+#   %.stl: %.scad              OpenSCAD -> STL
+#   %.3mf: %.scad              OpenSCAD -> 3MF
+#   %.stl: %.py                CadQuery Python -> STL
+#   %.pdf: %.py                ReportLab Python -> PDF
 #
-# Output mirrors source: ./toys/foo.scad -> ./out/toys/foo.stl
+# Output lands next to source: ./toys/foo.scad -> ./toys/foo.stl
 
 # ---------------------------------------------------------------------------
 # Config
@@ -31,42 +31,31 @@ ALL_PY    := $(shell find . -name '*.py' $(EXCLUDE))
 PY3D_SRCS := $(foreach f,$(ALL_PY),$(shell grep -ql 'cadquery' $(f) && echo $(f)))
 PY2D_SRCS := $(foreach f,$(ALL_PY),$(shell grep -ql 'reportlab' $(f) && echo $(f)))
 
-# Build output lists
+# Build output lists (same directory as source)
 SCAD_STLS := $(SCAD_SRCS:.scad=.stl)
 SCAD_3MFS := $(SCAD_SRCS:.scad=.3mf)
 PY3D_STLS := $(PY3D_SRCS:.py=.stl)
 PY2D_PDFS := $(PY2D_SRCS:.py=.pdf)
-
-# Prepend out/ to all outputs
-SCAD_STLS := $(patsubst ./%,out/%,$(SCAD_STLS))
-SCAD_3MFS := $(patsubst ./%,out/%,$(SCAD_3MFS))
-PY3D_STLS := $(patsubst ./%,out/%,$(PY3D_STLS))
-PY2D_PDFS := $(patsubst ./%,out/%,$(PY2D_PDFS))
 
 # ---------------------------------------------------------------------------
 # Pattern rules
 # ---------------------------------------------------------------------------
 
 # OpenSCAD -> STL
-out/%.stl: %.scad
-	@mkdir -p $(dir $@)
+%.stl: %.scad
 	$(OPENSCAD) -o $@ $<
 
 # OpenSCAD -> 3MF
-out/%.3mf: %.scad
-	@mkdir -p $(dir $@)
+%.3mf: %.scad
 	$(OPENSCAD) -o $@ $<
 
 # CadQuery Python -> STL (script self-renders via common.py)
-out/%.stl: %.py
-	@mkdir -p $(dir $@)
+%.stl: %.py
 	$(PYTHON) $<
 
-# ReportLab Python -> PDF (run script, move PDF to out/)
-out/%.pdf: %.py
-	@mkdir -p $(dir $@)
+# ReportLab Python -> PDF (script writes PDF next to itself)
+%.pdf: %.py
 	$(PYTHON) $<
-	@mv $(dir $<)$(notdir $@) $(dir $@) 2>/dev/null || true
 
 # ---------------------------------------------------------------------------
 # Aggregate targets
@@ -82,17 +71,19 @@ stl: $(SCAD_STLS) $(PY3D_STLS)
 pdf: $(PY2D_PDFS)
 
 clean:
-	rm -rf out
+	find . -name '*.stl' -not -path './.venv/*' -delete
+	find . -name '*.3mf' -not -path './.venv/*' -delete
+	find . -name '*.pdf' -not -path './.venv/*' -delete
 
 list:
 	@echo "=== OpenSCAD -> STL ==="
-	@for f in $(SCAD_SRCS); do echo "  out/$${f#./}"  | sed 's/\.scad/.stl/'; done
+	@for f in $(SCAD_SRCS); do echo "  $${f%.scad}.stl  <-  $$f"; done
 	@echo ""
 	@echo "=== OpenSCAD -> 3MF ==="
-	@for f in $(SCAD_SRCS); do echo "  out/$${f#./}"  | sed 's/\.scad/.3mf/'; done
+	@for f in $(SCAD_SRCS); do echo "  $${f%.scad}.3mf  <-  $$f"; done
 	@echo ""
 	@echo "=== CadQuery Python -> STL ==="
-	@for f in $(PY3D_SRCS); do echo "  out/$${f#./}" | sed 's/\.py/.stl/'; done
+	@for f in $(PY3D_SRCS); do echo "  $${f%.py}.stl  <-  $$f"; done
 	@echo ""
 	@echo "=== 2D Template -> PDF ==="
-	@for f in $(PY2D_SRCS); do echo "  out/$${f#./}" | sed 's/\.py/.pdf/'; done
+	@for f in $(PY2D_SRCS); do echo "  $${f%.py}.pdf  <-  $$f"; done
