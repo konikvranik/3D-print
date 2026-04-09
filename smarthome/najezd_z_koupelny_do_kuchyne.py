@@ -42,10 +42,11 @@ def build_ramp():
     # Otočení tak, aby ležel na nájezdové ploše (šířka 250, výška 30, hloubka 65)
     # Úhel sklonu nájezdu: atan((HEIGHT - tip_height) / DEPTH)
     import math
+
     angle = math.degrees(math.atan2(HEIGHT - tip_height, DEPTH))
 
     # Otočíme kolem osy Y (šířka) tak, aby šikmá plocha byla nahoře a vodorovná (pro tisk)
-    # Původní orientace: 
+    # Původní orientace:
     # Spodek (0,0)-(DEPTH,0) je v rovině Z=0.
     # Šikmá plocha (0, tip_height)-(DEPTH, HEIGHT).
     # Po otočení o (180 + angle) kolem Y:
@@ -80,12 +81,9 @@ def side_fillet(ramp: Workplane, direction="<") -> Workplane:
 
 def main():
     """Hlavní workflow."""
-    # Určíme absolutní cestu k výstupnímu souboru v kořenovém adresáři projektu
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(script_dir)
-    output_path = os.path.join(project_root, "out", "najezd_z_koupelny_do_kuchyne_left.stl")
+    output_path = "najezd_z_koupelny_do_kuchyne_left.stl"
     render(side_fillet(build_ramp()), output_path)
-    output_path = os.path.join(project_root, "out", "najezd_z_koupelny_do_kuchyne_right.stl")
+    output_path = "najezd_z_koupelny_do_kuchyne_right.stl"
     render(side_fillet(build_ramp(), ">"), output_path)
 
 

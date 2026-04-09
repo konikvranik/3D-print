@@ -16,6 +16,8 @@ Usage:
     python3 toys/data_visor_template.py
 """
 
+import os
+
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
@@ -222,7 +224,7 @@ def draw_assembly_diagram(c: canvas.Canvas, x: float, y: float):
 
 def main():
     """Generate the PDF template."""
-    output_path = "toys/data_visor_template.pdf"
+    output_path = os.path.splitext(os.path.abspath(__file__))[0] + ".pdf"
 
     c = canvas.Canvas(output_path, pagesize=A4)
     c.setTitle("Data VISOR - Sablona pro 3D pero (9 let)")

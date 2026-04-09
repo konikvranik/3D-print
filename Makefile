@@ -53,7 +53,7 @@ PY2D_PDFS := $(PY2D_SRCS:.py=.pdf)
 %.stl: %.py
 	$(PYTHON) $<
 
-# ReportLab Python -> PDF (script writes PDF next to itself)
+# ReportLab Python -> PDF
 %.pdf: %.py
 	$(PYTHON) $<
 

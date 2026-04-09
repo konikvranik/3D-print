@@ -3,7 +3,14 @@ import sys
 
 import cadquery as cq
 from cadquery import Workplane, Assembly
-from ocp_vscode import show, show_object, reset_show, set_port, set_defaults, get_defaults
+from ocp_vscode import (
+    show,
+    show_object,
+    reset_show,
+    set_port,
+    set_defaults,
+    get_defaults,
+)
 
 
 def render(object_to_draw, file_name=None, tolerance=0.0001, angularTolerance=0.1):
@@ -11,12 +18,14 @@ def render(object_to_draw, file_name=None, tolerance=0.0001, angularTolerance=0.
     # if 'show_object' not in globals():
     #     def show_object(*args, **kwargs):
     #         pass
-    
+
     if file_name is None:
-        main_file = sys.argv[0]
-        # Získáme název souboru bez cesty a změníme koncovku
-        base_name = os.path.splitext(os.path.basename(main_file))[0]
-        file_name = f"out/{base_name}.stl"
+        import __main__
+
+        caller_file = getattr(__main__, "__file__", sys.argv[0])
+        script_dir = os.path.dirname(os.path.abspath(caller_file))
+        base_name = os.path.splitext(os.path.basename(caller_file))[0]
+        file_name = os.path.join(script_dir, f"{base_name}.stl")
 
     # Zajistíme existenci adresáře
     dir_name = os.path.dirname(file_name)
@@ -26,12 +35,18 @@ def render(object_to_draw, file_name=None, tolerance=0.0001, angularTolerance=0.
     print(f"Exporting model to {os.path.abspath(file_name)}...")
     # Export the model to STL
     if isinstance(object_to_draw, Assembly):
-        object_to_draw.export(file_name, tolerance=tolerance, angularTolerance=angularTolerance)
+        object_to_draw.export(
+            file_name, tolerance=tolerance, angularTolerance=angularTolerance
+        )
     else:
-        cq.exporters.export(object_to_draw, file_name, None, tolerance, angularTolerance)
-    
+        cq.exporters.export(
+            object_to_draw, file_name, None, tolerance, angularTolerance
+        )
+
     if os.path.exists(file_name):
-        print(f"Successfully saved to {os.path.abspath(file_name)} ({os.path.getsize(file_name)} bytes)")
+        print(
+            f"Successfully saved to {os.path.abspath(file_name)} ({os.path.getsize(file_name)} bytes)"
+        )
     else:
         print(f"FAILED to save to {os.path.abspath(file_name)}")
 
@@ -74,7 +89,6 @@ def calculate_pla_bore_diameter(screw_diameter: float) -> float:
     return round(calculated_hole, 2)
 
 
-
 def build_toothed_cylinder(radius, cylinder_height, num_teeth=60, tooth_depth=2):
     import math
 
@@ -100,11 +114,6 @@ def build_toothed_cylinder(radius, cylinder_height, num_teeth=60, tooth_depth=2)
         points.append((x_peak, y_peak))
 
     # Vytvoříme profil ozubení jako uzavřený polygon
-    result = (
-        cq.Workplane("XY")
-        .polyline(points)
-        .close()
-        .extrude(cylinder_height)
-    )
+    result = cq.Workplane("XY").polyline(points).close().extrude(cylinder_height)
 
     return result
