@@ -1,3 +1,5 @@
+import os
+
 import cadquery as cq
 
 
@@ -60,9 +62,11 @@ class FilamentGuide:
         assembly.constrain("body", cq.Vertex.makeVertex(-100, 100, 100), "text",
                            cq.Vertex.makeVertex(-100, 100, 100), "Point")
         assembly.solve()
-        assembly.save("tube_holder.step")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        assembly.save(os.path.join(script_dir, "tube_holder.step"))
 
-        cq.exporters.export(cq.Compound.makeCompound([body, text]).rotate([0, 0, 0], [1, 0, 0], -90), "tube_holder.3mf",
+        cq.exporters.export(cq.Compound.makeCompound([body, text]).rotate([0, 0, 0], [1, 0, 0], -90),
+                            os.path.join(script_dir, "tube_holder.3mf"),
                             tolerance=0.01, angularTolerance=0.1)
 
     def _add_tip(self, direction=1):
