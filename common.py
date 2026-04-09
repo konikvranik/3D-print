@@ -19,13 +19,17 @@ def render(object_to_draw, file_name=None, tolerance=0.0001, angularTolerance=0.
     #     def show_object(*args, **kwargs):
     #         pass
 
-    if file_name is None:
-        import __main__
+    import __main__
 
-        caller_file = getattr(__main__, "__file__", sys.argv[0])
-        script_dir = os.path.dirname(os.path.abspath(caller_file))
+    caller_file = getattr(__main__, "__file__", sys.argv[0])
+    script_dir = os.path.dirname(os.path.abspath(caller_file))
+
+    if file_name is None:
         base_name = os.path.splitext(os.path.basename(caller_file))[0]
         file_name = os.path.join(script_dir, f"{base_name}.stl")
+    else:
+        if not os.path.isabs(file_name) and not os.path.dirname(file_name):
+            file_name = os.path.join(script_dir, file_name)
 
     # Zajistíme existenci adresáře
     dir_name = os.path.dirname(file_name)
