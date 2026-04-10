@@ -11,3 +11,4 @@
 *.step
 *.3mf
 __pycache__/
+tools/openscad

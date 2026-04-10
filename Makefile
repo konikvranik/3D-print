@@ -18,8 +18,21 @@
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-OPENSCAD := openscad
+# Find OpenSCAD: system first, then local AppImage, then auto-download
+OPENSCAD_SYSTEM := $(shell openscad --version >/dev/null 2>&1 && echo openscad)
+OPENSCAD_LOCAL  := $(shell test -x tools/openscad && echo tools/openscad)
+ifdef OPENSCAD_SYSTEM
+  OPENSCAD := $(OPENSCAD_SYSTEM)
+else ifdef OPENSCAD_LOCAL
+  OPENSCAD := $(OPENSCAD_LOCAL)
+else
+  OPENSCAD := tools/setup_openscad.sh
+endif
 PYTHON   := .venv/bin/python3
+
+ifneq ($(OPENSCAD),tools/setup_openscad.sh)
+$(info Using OpenSCAD: $(OPENSCAD))
+endif
 
 # ---------------------------------------------------------------------------
 # Source discovery (content-based for Python)
