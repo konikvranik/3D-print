@@ -82,7 +82,8 @@ PY2D_PDFS := $(PY2D_SRCS:.py=.pdf)
 # ---------------------------------------------------------------------------
 .PHONY: all stl 3mf pdf clean list
 
-all: stl 3mf pdf
+all:
+	$(MAKE) -k stl 3mf pdf
 
 stl: $(SCAD_STLS) $(PY3D_STLS)
 
