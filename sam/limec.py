@@ -6,21 +6,19 @@ import cadquery as cq
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common import render
 
-WIDTH = 230
 THICK = 20
+WIDTH = 230 - 2 * THICK
 SAGITA = 70
 
 
 def build_body():
-    """Vytvoří model límce z CyberPunku.
+    """Vytvoří model límce z CyberPunku s konstantní tloušťkou.
     """
 
     body = (cq.Workplane("XY")
             .moveTo(0, 0)
             .sagittaArc((WIDTH, 0), SAGITA)
-            .line(0, -THICK)
-            .sagittaArc((0, -THICK), -SAGITA)
-            .close()
+            .offset2D(-THICK, kind='intersection')
             .extrude(20))
     return body
 
