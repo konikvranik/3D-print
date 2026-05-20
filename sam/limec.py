@@ -7,8 +7,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common import render
 
 THICK = 20
-WIDTH = 230 - 2 * THICK
+WIDTH = 230 -  THICK
 SAGITA = 70
+HEIGHT = 70
 
 
 def build_body():
@@ -18,8 +19,8 @@ def build_body():
     body = (cq.Workplane("XY")
             .moveTo(0, 0)
             .sagittaArc((WIDTH, 0), SAGITA)
-            .offset2D(-THICK, kind='intersection')
-            .extrude(20))
+            .offset2D(THICK/2, kind='intersection')
+            .extrude(HEIGHT))
     return body
 
 
