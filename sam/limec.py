@@ -9,9 +9,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common import render
 
 THICK = 20
-WIDTH = 230 - THICK
-SAGITA = 70
-HEIGHT = 70
+WIDTH = 280
+SAGITA = 90
+HEIGHT = 60
 
 HOLE_DIAMETER = 3  # screw holes in the bottom plate
 HOLE_COUNT = 6     # number of holes along the sagittaArc
