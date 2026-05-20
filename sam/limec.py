@@ -45,7 +45,7 @@ def arc_hole_points(count: int) -> list:
         angle = a_start + t * (a_end - a_start)
         x = cx + r_hole * math.cos(angle)
         y = cy + r_hole * math.sin(angle)
-        points.append((x, y))
+        points.append((x, -y))
     return points
 
 
@@ -69,11 +69,11 @@ def build_body():
 
     # screw holes along the sagittaArc in the bottom plate
     holes = arc_hole_points(HOLE_COUNT)
-    for hx, hy in holes:
-        cyl = (cq.Workplane("XY", origin=(hx, hy, -0.1))
-               .circle(HOLE_DIAMETER / 2)
-               .extrude(2.2))
-        body = body.cut(cyl)
+    body = (body.faces("<Z")
+            .workplane()
+            .pushPoints(holes)
+            .circle(HOLE_DIAMETER / 2)
+            .cutBlind(-2))
 
     return body
 
