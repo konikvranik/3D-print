@@ -6,22 +6,23 @@ import cadquery as cq
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common import render
 
-#                ←- H -→
-#                    ←I→
-#                 _____________
-#                |##|_______|##|           ↕ A
+#                 ← H -→
+#                ←- I -→
+#                    ←J→
+#                  ___________
+#                 |#|_______|#|            ↕ A
 #                /##|       |##\           ↑
 #               /###|       |###\          | B
 #              /####|_______|####\         ↓
-#            J ← |##|  →    |##|           ↑
+#            K ← |##|  →    |##|           ↑
 #                |##|       |##|           | C
 #                |##|_______|##|           ↓
 #               /###|_______|###\          ↕ D
-#             K ←|##|  →    |##|           ↑
+#             L ←|##|  →    |##|           ↑
 #                |##|       |##|           ↓ E
 #               |###|       |###|          ↕ F
 #               ||##|_______|##||          ↕ G
-#              L ←     →
+#             M ←      →
 
 A = 1.5
 B = 7.117
@@ -30,20 +31,32 @@ D = 2
 E = 5
 F = 1.247
 G = 2.453
-OUTER_RADIUS_H = 6.5 / 2
-INNER_RADIUS_I = 5.502 / 2
-BIG_TOOTH_RADIUS_J = 16.854 / 2
-SMALL_TOOTH_RADIUS_K = 14.871 / 2
-COLLAR_RADIUS_L = 8.25 / 2
+H_STARTING_OUTER_RADIUS = 6.5
+I_OUTER_RADIUS = 7
+J_INNER_RADIUS = 5.5
+K_BIG_TOOTH_RADIUS = 8.5
+L_SMALL_TOOTH_RADIUS = 7.5
+M_COLLAR_RADIUS = 8.25
 
 
 def build_body():
     """Vytvoří model stolního držáku na křeslo.
     """
 
-    body = cq.Workplane("XY").moveTo(0, 0).radiusArc((WIDTH, 0), 100).line(0, -50).radiusArc((0, -50), -100).lineTo(0,
-                                                                                                                    0).close().extrude(
-        20)
+    body = (cq.Workplane("XY").moveTo(0,J_INNER_RADIUS)
+            .line(0,H_STARTING_OUTER_RADIUS-J_INNER_RADIUS)
+            .line(A,0)
+            .line(B,K_BIG_TOOTH_RADIUS-H_STARTING_OUTER_RADIUS)
+            .line(0,I_OUTER_RADIUS-K_BIG_TOOTH_RADIUS)
+            .line(C,0)
+            .line(D,L_SMALL_TOOTH_RADIUS-I_OUTER_RADIUS)
+            .line(0,I_OUTER_RADIUS-L_SMALL_TOOTH_RADIUS)
+            .line(E,0)
+            .line(0,M_COLLAR_RADIUS-I_OUTER_RADIUS)
+            .line(F,0)
+            .line(0,J_INNER_RADIUS-M_COLLAR_RADIUS)
+            .close()
+            .revolve(angleDegrees=360, axisStart=(0, 0, 0), axisEnd=(1, 0, 0)))
     return body
 
 
