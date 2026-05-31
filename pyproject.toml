@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "3d-print-models"
+version = "0.1.0"
+description = "Parametric 3D print models using CadQuery"
+requires-python = ">=3.10"
+
+dependencies = [
+    "cadquery",
+    "cq-gears",
+]
