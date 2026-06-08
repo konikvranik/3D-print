@@ -13,6 +13,7 @@ dependencies = [
     "vtk",
     "cadquery-massembly",
     "cadquery-vtk",
+    "cq_gears @ git+https://github.com/meadiode/cq_gears.git",
 ]
 
 [tool.hatch.build.targets.wheel]

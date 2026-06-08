@@ -2,23 +2,10 @@ import os
 import sys
 
 import cadquery as cq
-from cadquery import Workplane, Assembly
-from ocp_vscode import (
-    show,
-    show_object,
-    reset_show,
-    set_port,
-    set_defaults,
-    get_defaults,
-)
+from cadquery import Assembly
 
 
 def render(object_to_draw, file_name=None, tolerance=0.0001, angularTolerance=0.1):
-    # Check if show_object is available (for CQ-editor)
-    # if 'show_object' not in globals():
-    #     def show_object(*args, **kwargs):
-    #         pass
-
     import __main__
 
     caller_file = getattr(__main__, "__file__", sys.argv[0])
@@ -54,10 +41,9 @@ def render(object_to_draw, file_name=None, tolerance=0.0001, angularTolerance=0.
     else:
         print(f"FAILED to save to {os.path.abspath(file_name)}")
 
-    try:
+    # Show in CQ-editor if available
+    if "show_object" in dir(__builtins__) or "show_object" in globals():
         show_object(object_to_draw)
-    except Exception as e:
-        print(f"Note: Could not show object in viewer: {e}")
 
 
 def calculate_pla_bore_diameter(screw_diameter: float) -> float:
