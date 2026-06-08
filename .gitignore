@@ -12,3 +12,5 @@
 *.3mf
 __pycache__/
 tools/openscad
+.venv/
+.junie/
