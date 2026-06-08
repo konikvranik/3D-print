@@ -24,6 +24,9 @@ BRW = 28  # width of the bottom-right section
 BAH = 4.5  # height of the bottom base strip
 CD = 4  # connector depth
 WW = 4  # wire width
+SHA = 4  # mount screw hole
+SHB = 1.8  # screw hole
+
 W = 3  # wall width
 """
   ______________
@@ -117,6 +120,21 @@ def cut_pir(box: Workplane) -> Workplane:
            .rect(SCW, BH + W, centered=False)
            .cutBlind(-BRW + BMH - CD)
            )
+    box = screw_hole(box, W)
+    box = screw_hole(box, W + (LD + SCW) / 2)
+    return box
+
+
+def screw_hole(box: Workplane, x_offset) -> Workplane:
+    rect_size = (SCW - LD) / 2
+    box = (box.faces("<Z").workplane(centerOption="ProjectedOrigin", offset=-W)
+           .moveTo(x_offset, -(W + BH / 2 - (SCW - LD) / 4))
+           .rect(rect_size, -rect_size, centered=False)
+           .extrude(-3)
+           )
+    box = (box.faces("<Z").workplane(centerOption="ProjectedOrigin", offset=-.4)
+           .moveTo(x_offset + rect_size / 2, -(W + BH / 2 - (SCW - LD) / 4) - rect_size / 2)
+           .circle(SHB / 2).cutBlind(-(W + 2 * 3)))
     return box
 
 
@@ -135,10 +153,27 @@ def build_body():
     box = (box.box(SAW + SBW + SCW + 2 * W, BH + HT + 2 * W, BRW + W, centered=(False, False, False))
            .edges(StringSyntaxSelector("<Z") + StringSyntaxSelector("|Z"))
            .fillet(W * 2))
+    # mount screw
+    hole_offset_x = (SAW + SBW + SCW + 2 * W) / 2
+    hole_offet_y = (BH + HT + 2 * W + 1.5 * W)
+    box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
+           .moveTo(hole_offset_x, hole_offet_y)
+           .circle(SHA / 2 + 2 * W)
+           .extrude(-W)
+           .faces(">Z")
+           .workplane(centerOption="ProjectedOrigin")
+           .moveTo(hole_offset_x, hole_offet_y)
+           .circle(SHA / 2)
+           .cutBlind(-W)
+           )
     box = cut_pir(box)
     box = cut_esp(box)
     box = cut_upper_cave(box)
     box = cut_wire_hole(box)
+
+    box = (box
+           .faces(">Z[-2]")
+           .fillet(1))
     return box
 
 
