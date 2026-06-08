@@ -3,6 +3,7 @@ import sys
 from typing import Any
 
 from cadquery import Workplane
+from cadquery.selectors import StringSyntaxSelector
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -95,7 +96,9 @@ def cut_esp(box):
 def build_body():
     """Vytvoří tělo modelu."""
     box = cq.Workplane("XY", origin=(0, 0, 0))
-    box = box.box(SAW + SBW + SCW + 2 * W, BH + HT + 2 * W, BRW + W, centered=(False, False, False))
+    box = (box.box(SAW + SBW + SCW + 2 * W, BH + HT + 2 * W, BRW + W, centered=(False, False, False))
+           .edges(StringSyntaxSelector("<Z") + StringSyntaxSelector("|Z"))
+           .fillet(W))
     box = cut_pir(box)
     box = cut_esp(box)
     box = cut_upper_cave(box)
