@@ -1,5 +1,8 @@
 import os
 import sys
+from typing import Any
+
+from cadquery import Workplane
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -18,6 +21,7 @@ BLH = 15  # height of the bottom-left section
 BMH = 16.8  # height of the bottom-middle section
 BRW = 28  # width of the bottom-right section
 BAH = 4.5  # height of the bottom base strip
+CD = 4  # connector depth
 W = 3  # wall width
 """
   ______________
@@ -67,11 +71,60 @@ W = 3  # wall width
 """
 
 
+def cut_esp(box):
+    box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
+           .moveTo(W + SCW + SBW, W)
+           .rect(SAW, BH, centered=False)
+           .cutBlind(-BRW + BMH))
+    box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
+           .moveTo(W + SCW + SBW + EW, W)
+           .rect(SAW - 2 * EW, BH, centered=False)
+           .cutBlind(-BRW + BMH - BLH))
+    box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
+           .moveTo(W + SCW + SBW + EW, W)
+           .rect(SAW - 2 * EW, BH + HT, centered=False)
+           .cutBlind(-BRW + BMH - CD))
+    box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
+           .moveTo(W + SCW, W + BH / 2 - CW)
+           .rect(SBW + EW, CW * 2, centered=False)
+           .cutBlind(-BRW + BMH - CD))
+
+    return box
+
+
 def build_body():
     """Vytvoří tělo modelu."""
     box = cq.Workplane("XY", origin=(0, 0, 0))
-    box = box.box(SAW + SBW + SCW + 2 * W, BH + HT + 2 * W,  BRW + W, centered=(False))
-    box = box.faces(">Z").workplane(centerOption="ProjectedOrigin").moveTo(W+SCW,W+LD).circle(LD / 2).cutBlind(BRW)
+    box = box.box(SAW + SBW + SCW + 2 * W, BH + HT + 2 * W, BRW + W, centered=(False, False, False))
+    box = cut_pir(box)
+    box = cut_esp(box)
+    box = cut_upper_cave(box)
+    return box
+
+
+def cut_upper_cave(box) -> Any:
+    box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
+           .moveTo(W, W + BH + W)
+           .rect(SAW + SBW + SCW, HT - W, centered=False)
+           .cutBlind(-BRW))
+    return box
+
+
+def cut_pir(box: Workplane) -> Workplane:
+    box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
+           .moveTo(W + SCW / 2, W + LD / 2)
+           .circle(LD / 2)
+           .cutBlind(-BRW - W))
+    box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
+           .moveTo(W, W)
+           .rect(SCW, BH, centered=False)
+           .cutBlind(-BRW)
+           )
+    box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
+           .moveTo(W, W)
+           .rect(SCW, BH + W, centered=False)
+           .cutBlind(-BRW + BMH - CD)
+           )
     return box
 
 
