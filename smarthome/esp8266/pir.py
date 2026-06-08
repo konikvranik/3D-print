@@ -11,11 +11,11 @@ from common import render, cq
 
 # Dimensions from annotated drawing
 HT = 24  # total height of the left side
-SAW = 21.77  # width of first section
+SAW = 22  # width of first section
 SBW = 7  # width of second section
 SCW = 32.8  # width of third section
 CW = 5  # width of the top connector protrusion
-BH = 25  # height of the main body
+BH = 25.3  # height of the main body
 EW = 2  # width of left/right edge walls
 LD = 25  # diameter of the PIR lens circle
 BLH = 15  # height of the bottom-left section
