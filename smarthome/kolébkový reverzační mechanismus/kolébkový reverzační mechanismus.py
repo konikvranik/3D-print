@@ -102,5 +102,5 @@ sestava.add(klip, name="pojistka_prava", color=cq.Color("blue"),
             loc=cq.Location(cq.Vector(x_p, y_p, tloustka_kol/2 + 1.0)))
 
 # Export do jednoho STEP souboru
-sestava.save("kolebkovy_mechanismus_cq_gears.step", "STEP")
+sestava.export("kolebkovy_mechanismus_cq_gears.step", exportType="STEP")
 print("Sestava úspěšně uložena.")
