@@ -23,6 +23,7 @@ BMH = 16.8  # height of the bottom-middle section
 BRW = 28  # width of the bottom-right section
 BAH = 4.5  # height of the bottom base strip
 CD = 4  # connector depth
+WW = 4  # wire width
 W = 3  # wall width
 """
   ______________
@@ -93,18 +94,6 @@ def cut_esp(box):
     return box
 
 
-def build_body():
-    """Vytvoří tělo modelu."""
-    box = cq.Workplane("XY", origin=(0, 0, 0))
-    box = (box.box(SAW + SBW + SCW + 2 * W, BH + HT + 2 * W, BRW + W, centered=(False, False, False))
-           .edges(StringSyntaxSelector("<Z") + StringSyntaxSelector("|Z"))
-           .fillet(W))
-    box = cut_pir(box)
-    box = cut_esp(box)
-    box = cut_upper_cave(box)
-    return box
-
-
 def cut_upper_cave(box) -> Any:
     box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
            .moveTo(W, W + BH + W)
@@ -128,6 +117,28 @@ def cut_pir(box: Workplane) -> Workplane:
            .rect(SCW, BH + W, centered=False)
            .cutBlind(-BRW + BMH - CD)
            )
+    return box
+
+
+def cut_wire_hole(box):
+    box = (box.faces(">X").workplane(centerOption="ProjectedOrigin")
+           .moveTo((W + BH + HT - WW / 2), - WW / 2)
+           .circle(WW / 2)
+           .cutBlind(-W)
+           )
+    return box
+
+
+def build_body():
+    """Vytvoří tělo modelu."""
+    box = cq.Workplane("XY", origin=(0, 0, 0))
+    box = (box.box(SAW + SBW + SCW + 2 * W, BH + HT + 2 * W, BRW + W, centered=(False, False, False))
+           .edges(StringSyntaxSelector("<Z") + StringSyntaxSelector("|Z"))
+           .fillet(W * 2))
+    box = cut_pir(box)
+    box = cut_esp(box)
+    box = cut_upper_cave(box)
+    box = cut_wire_hole(box)
     return box
 
 
