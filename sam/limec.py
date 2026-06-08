@@ -1,12 +1,10 @@
 import os
 import sys
-import math
-
-import cadquery as cq
-from cadquery import selectors
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from common import render
+
+from common import render, cq
+import math
+from cadquery import selectors
 
 THICK = 20
 WIDTH = 280
