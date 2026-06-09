@@ -115,11 +115,6 @@ def cut_pir(box: Workplane) -> Workplane:
            .rect(SCW, BH, centered=False)
            .cutBlind(-BRW)
            )
-    box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
-           .moveTo(W, W)
-           .rect(SCW, BH + W, centered=False)
-           .cutBlind(-BRW + BMH - CD)
-           )
     box = screw_hole(box, W)
     box = screw_hole(box, W + (LD + SCW) / 2)
     return box
@@ -140,14 +135,42 @@ def screw_hole(box: Workplane, x_offset) -> Workplane:
 
 def cut_wire_hole(box):
     box = (box.faces(">X").workplane(centerOption="ProjectedOrigin")
-           .moveTo((W + BH + HT - WW / 2), - WW / 2)
+           .moveTo((W + BH - WW / 2), W + BRW - WW / 2)
            .circle(WW / 2)
            .cutBlind(-W)
            )
     return box
 
 
-def build_body():
+def build_pir_case():
+    """Vytvoří tělo modelu."""
+    box = cq.Workplane("XY", origin=(0, 0, 0))
+    box = (box.box(SCW + 2 * W, BH + 2 * W, BRW + W, centered=(False, False, False))
+           .edges(StringSyntaxSelector("<Z") + StringSyntaxSelector("|Z"))
+           .fillet(W * 2))
+    # mount screw
+    hole_offset_x = (SCW + 2 * W) / 2
+    hole_offet_y = (BH + 2 * W + 1.5 * W)
+    box = (box.faces(">Z").workplane(centerOption="ProjectedOrigin")
+           .moveTo(hole_offset_x, hole_offet_y)
+           .circle(SHA / 2 + 2 * W)
+           .extrude(-W)
+           .faces(">Z")
+           .workplane(centerOption="ProjectedOrigin")
+           .moveTo(hole_offset_x, hole_offet_y)
+           .circle(SHA / 2)
+           .cutBlind(-W)
+           )
+    box = cut_pir(box)
+    box = cut_wire_hole(box)
+
+    box = (box
+           .faces(">Z[-2]")
+           .fillet(1))
+    return box
+
+
+def build_esp_case():
     """Vytvoří tělo modelu."""
     box = cq.Workplane("XY", origin=(0, 0, 0))
     box = (box.box(SAW + SBW + SCW + 2 * W, BH + HT + 2 * W, BRW + W, centered=(False, False, False))
@@ -179,7 +202,7 @@ def build_body():
 
 def main():
     """Hlavní workflow."""
-    render(build_body())
+    render(build_pir_case())
 
 
 if __name__ == "__main__":
