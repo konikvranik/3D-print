@@ -12,13 +12,13 @@ LENGTH = 50
 HEIGHT = 25
 WIDTH = 63
 THICK = 20
-OFFSET = 30
+OFFSET = 15
 INNER_RADIUS = 2
 OUTER_RADIUS = 4
 
 
 def hole(profile, x, y, radius):
-    return profile.moveTo(x * (LENGTH / 2 + OFFSET / 2), y * (WIDTH / 2)).circle(radius)
+    return profile.moveTo(x * (LENGTH / 2 - OUTER_RADIUS*2), y * (WIDTH / 2 + THICK+ OFFSET/2 )).circle(radius)
 
 
 def build_body():
@@ -27,7 +27,7 @@ def build_body():
 
     profile = (
         cq.Workplane("XY")
-        .box(2 * OFFSET + LENGTH, WIDTH + 2 * THICK, THICK, centered=(True, True, False))
+        .box(LENGTH, 2 * OFFSET + WIDTH + 2 * THICK, THICK, centered=(True, True, False))
         .box(LENGTH, WIDTH + 2 * THICK, 3 * HEIGHT + 2 * THICK, centered=(True, True, False))
         .faces("<X")
         .workplane()
