@@ -8,17 +8,17 @@ from common import render
 
 # Rozměry nájezdu (šířka, hloubka, výška)
 # Uživatel požaduje: šířka 250, výška 30, hloubka 65
-LENGTH = 50
-HEIGHT = 25
-WIDTH = 63
-THICK = 20
-OFFSET = 15
+LENGTH = 30 # šířka pásku
+HEIGHT = 25 # výška operadla
+WIDTH = 67 # šířka opěradla
+THICK = 20 # tloušťka profilu
+OFFSET = 15 # rozšíření pro díry vrutů
 INNER_RADIUS = 2
 OUTER_RADIUS = 4
 
 
 def hole(profile, x, y, radius):
-    return profile.moveTo(x * (LENGTH / 2 - OUTER_RADIUS*2), y * (WIDTH / 2 + THICK+ OFFSET/2 )).circle(radius)
+    return profile.moveTo(x * (LENGTH / 2 - OUTER_RADIUS * 2), y * (WIDTH / 2 + THICK + OFFSET / 2)).circle(radius)
 
 
 def build_body():
@@ -27,17 +27,25 @@ def build_body():
 
     profile = (
         cq.Workplane("XY")
+        # spodní základna
         .box(LENGTH, 2 * OFFSET + WIDTH + 2 * THICK, THICK, centered=(True, True, False))
-        .box(LENGTH, WIDTH + 2 * THICK, 3 * HEIGHT + 2 * THICK, centered=(True, True, False))
+        # profil
+        .box(LENGTH, WIDTH + 2 * THICK, 1.5 * HEIGHT + 2 * THICK, centered=(True, True, False))
+
         .faces("<X")
         .workplane()
+
         .moveTo(0, THICK)
-        .rect(WIDTH, HEIGHT, centered=(True, False))
-        .moveTo(-THICK, THICK + HEIGHT)
-        .rect(2 * THICK + WIDTH, 2 * HEIGHT, centered=(True, False))
-        .moveTo(-WIDTH, THICK + HEIGHT)
-        .rect(1.5 * WIDTH, 2 * HEIGHT + 2 * THICK, centered=(True, False))
+        .rect(WIDTH, HEIGHT * 2, centered=(True, False))
+
+        .moveTo(-2 * THICK, THICK + .75 * HEIGHT)
+        .rect(2 * THICK, 2 * HEIGHT + 2 * THICK, centered=(True, False))
+
+        # .moveTo(-WIDTH, THICK + HEIGHT)
+        # .rect(1.5 * WIDTH, 2 * HEIGHT + 2 * THICK, centered=(True, False))
+
         .cutThruAll()
+        .fillet(2)
         .faces("<Z")
         .workplane(centerOption="CenterOfBoundBox", offset=-THICK)
 
