@@ -11,7 +11,8 @@ from cadquery import Workplane, selectors
 # Korzet je vodorovná deska položená na ramena. Krk prochází nákrčníkem
 # u přední hrany, límec (limec.py) stojí na desce kolem krku a připevňuje
 # se suchými zipy. Deska se nosí stranou s opěrami dolů:
-# přední opěry se opírají o hrudník, zadní opěrka o páteř - společně drží
+# přední opěry se sklopené vpřed opírají o hrudník, zadní opěrka o páteř
+# (na konci opěrek je jejich osová vzdálenost CHEST_SPAN) - společně drží
 # desku (a límec) na místě vpřed i vzad.
 # V souřadnicích modelu (= tisková orientace): přední hrana je y=0,
 # zadní hrana y=-PANEL_HEIGHT, opěry stojí na ploše z=PANEL_THICKNESS.
@@ -43,15 +44,17 @@ REST_INNER_X = 65  # vnitřní okraj opěry od středu (hrana nákrčníku je ~5
 REST_OUTER_X = 86  # vnější okraj opěry od středu
 REST_TOP_OFFSET = 1  # posun opěry od přední hrany (okraj materiálu pro čistou geometrii)
 REST_THICKNESS = 5  # tloušťka opěry
-REST_REACH = 50  # délka opěry dolů k hrudníku
+REST_REACH = 100  # délka opěry podél osy od desky k hrudníku (10 cm)
+REST_EMBED = 12  # zakořenění paty opěry; po sklopení projde šikmo deskou a ořízne se v rovině dna
 REST_SLOPE_DROP = 9  # pokles opěry k ramennímu kloubu (svah ramene od krku)
 REST_TOP_FILLET = 2  # zaoblení dolního konce opěry
+CHEST_SPAN = 140  # osová vzdálenost přední a zadní opěrky na konci opěrek (páteř–hrudník)
 
 # Zadní opěrka - širší stěna uprostřed zadní hrany. Po nasazení se opírá
-# o páteř (vzdálenost hrudník-páteř je ~140 mm, přední a zadní opěra se
-# proto doplňují) a brání desce sklouznout dopředu.
+# o páteř (vzdálenost hrudník-páteř je CHEST_SPAN, přední a zadní opěra
+# se proto doplňují) a brání desce sklouznout dopředu.
 BACK_BRACE_WIDTH = 70  # šířka zadní opěrky (přední opěry mají po 21 mm)
-BACK_BRACE_REACH = 50  # délka zadní opěrky dolů k páteři
+BACK_BRACE_REACH = 100  # délka zadní opěrky dolů k páteři (stejně jako přední opěry)
 BACK_BRACE_THICKNESS = 5  # tloušťka zadní opěrky (stejná jako přední opěry)
 
 
@@ -62,6 +65,7 @@ def build_korzet() -> Workplane:
     body = neck_hole(body)
     body = shoulder_rest(body, 1)
     body = shoulder_rest(body, -1)
+    body = trim_below_panel(body)
     body = back_brace(body)
     body = zip_tie_slots(body)
     return body
@@ -117,12 +121,40 @@ def neck_hole(body: Workplane) -> Workplane:
             .fillet(NECK_EDGE_FILLET))
 
 
+def back_brace_axis_y() -> float:
+    """Souřadnice y osy zadní opěrky (svislá středová čára stěny)."""
+    return -PANEL_HEIGHT + REST_TOP_OFFSET + BACK_BRACE_THICKNESS / 2
+
+
+def front_rest_lean_angle() -> float:
+    """Úhel sklopení přední opěrky od svislice (ve stupních).
+
+    Opěrka se otáčí kolem přední hrany své paty u desky; na konci opěrky
+    (REST_REACH podél osy) musí její osa ležet v osové vzdálenosti
+    CHEST_SPAN od osy zadní opěrky, aby konec opěrky seděl na hrudníku.
+
+    Returns:
+        Úhel sklopení vpřed ve stupních.
+    """
+    y_hinge = -REST_TOP_OFFSET  # přední hrana paty = osa otáčení
+    y_axis_base = y_hinge - REST_SLOPE_DROP / 2 - REST_THICKNESS / 2  # osa opěrky v patě
+    # Konec osy po otočení o a: y = y_hinge + (y_axis_base - y_hinge)*cos(a) + REST_REACH*sin(a)
+    # Odkud REST_REACH*sin(a) - k*cos(a) = c; řešíme přes R*sin(a - phi) = c.
+    k = y_hinge - y_axis_base
+    c = back_brace_axis_y() + CHEST_SPAN - y_hinge
+    r = math.hypot(REST_REACH, k)
+    phi = math.atan2(k, REST_REACH)
+    return math.degrees(phi + math.asin(c / r))
+
+
 def shoulder_rest(body: Workplane, side: int) -> Workplane:
     """Přidá přední opěru - stěnu opírající se po nasazení o hrudník.
 
     Opěra je kotvená u přední hrany desky po straně nákrčníku a míří
-    dolů; spodní okraj je vůči přední hraně zešikmený o REST_SLOPE_DROP,
-    aby kopíroval klesající svah ramene od krku k ramennímu kloubu.
+    dolů k hrudníku; je sklopená vpřed tak, aby konec opěrky ležel
+    v osové vzdálenosti CHEST_SPAN od zadní opěrky na páteři. Spodní
+    okraj je vůči přední hraně zešikmený o REST_SLOPE_DROP, aby
+    kopíroval klesající svah ramene od krku k ramennímu kloubu.
 
     Args:
         body: Deska s vyříznutou dírou pro krk.
@@ -135,24 +167,40 @@ def shoulder_rest(body: Workplane, side: int) -> Workplane:
     x_out = side * REST_OUTER_X
     y_top = -REST_TOP_OFFSET
     y_bottom = y_top - REST_THICKNESS
-    rest = (cq.Workplane("XY", origin=(0, 0, PANEL_THICKNESS))
+    # Patu opěry záměrně zahouíme pod desku - samotná sklopená stěna by se
+    # desky dotýkala jen hranou; zakořeněná a oříznutá páka je monolit.
+    rest = (cq.Workplane("XY", origin=(0, 0, PANEL_THICKNESS - REST_EMBED))
             .polyline([(x_in, y_top),
                        (x_out, y_top - REST_SLOPE_DROP),
                        (x_out, y_bottom - REST_SLOPE_DROP),
                        (x_in, y_bottom)])
             .close()
-            .extrude(REST_REACH))
-    body = body.union(rest)
+            .extrude(REST_REACH + REST_EMBED))
     x_min, x_max = min(x_in, x_out), max(x_in, x_out)
-    y_min, y_max = y_bottom - REST_SLOPE_DROP, y_top
-    # dolní konec opěry
+    y_min = y_bottom - REST_SLOPE_DROP
+    # dolní konec opěry - zaoblit ještě ve svislé poloze, před sklopením
     # (kotvící fillet u desky záměnně chybí - OCC ho u přední hrany
     # desky neumí korektně postavit a poškodil by těleso)
-    body = (body
+    rest = (rest
             .edges(selectors.BoxSelector((x_min - 1, y_min - 1, PANEL_THICKNESS + REST_REACH - 1),
-                                         (x_max + 1, y_max + 0.1, PANEL_THICKNESS + REST_REACH + 1)))
+                                         (x_max + 1, y_top + 0.1, PANEL_THICKNESS + REST_REACH + 1)))
             .fillet(REST_TOP_FILLET))
-    return body
+    # sklopení vpřed k hrudníku - otočení kolem přední hrany paty
+    lean = front_rest_lean_angle()
+    rest = rest.rotate((-200, y_top, PANEL_THICKNESS), (200, y_top, PANEL_THICKNESS), -lean)
+    return body.union(rest)
+
+
+def trim_below_panel(body: Workplane) -> Workplane:
+    """Ořízne veškerý materiál pod spodní rovinou desky (z=0).
+
+    Sklopené přední opěry procházejí patou šikmo skrz deskou; oříznutí
+    vrátí ploché dno, aby se korzet tiskl na plocho bez podpor.
+    """
+    cutter = (cq.Workplane("XY", origin=(0, 0, -10))
+              .rect(500, 500)
+              .extrude(10))
+    return body.cut(cutter)
 
 
 def back_brace(body: Workplane) -> Workplane:
@@ -162,7 +210,7 @@ def back_brace(body: Workplane) -> Workplane:
     tak deska nemůže klouzat dopředu ani dozadu.
     """
     half_w = BACK_BRACE_WIDTH / 2
-    y_center = -PANEL_HEIGHT + REST_TOP_OFFSET + BACK_BRACE_THICKNESS / 2
+    y_center = back_brace_axis_y()
     # pilulkový průřez stěny (zaoblené konce, tloušťka = šířka slotu)
     brace = (cq.Workplane("XY", origin=(0, 0, PANEL_THICKNESS))
              .center(0, y_center)
